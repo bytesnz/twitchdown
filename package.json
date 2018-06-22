@@ -1,0 +1,9 @@
+{
+  "name": "reactdown",
+  "version": "1.0.0",
+  "description": "Dead simple Markdown parser for (p)react",
+  "main": "index.jsx",
+  "repository": "https://gitlab.com/bytesnz/reactdown.git",
+  "author": "Jack Farley <or4e3dsw@bytes.nz>",
+  "license": "GPL-3.0"
+}
