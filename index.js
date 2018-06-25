@@ -6,6 +6,8 @@ const TAGS = {
   ' ' : ['<br />'],
   '-': ['<hr />']
 };
+const removeTags = [ 'script' ];
+const skipTags = [];
 
 /** Outdent a string based on the first indented line's leading whitespace
  *  @private
@@ -34,7 +36,8 @@ module.exports = function parse(md, prevLinks) {
   // (?:`(!16![^`].*?)`)|  - Inline code
   // (!17!  \n\n*|\n{2,}|__|\*\*|[_*]|~~)| - Formatters
   // (?:{@(!18!\w+)(!19!(?:\s+(?:"(?:\\"|[^"])*"|[^"}]*))*)})| - Special MD Tag
-  let tokenizer = /((?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|(?:^``` *(\w*)\n([\s\S]*?)\n```$)|((?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)|((?:(?:^|\n)([>*+-]|\d+\.)\s+.*)+)|(?:\!\[([^\]]*?)\]\(([^\)]+?)\))|(\[)|(\](?:\(([^\)]+?)\))?)|(?:(?:^|\n+)([^\s].*)\n(\-{3,}|={3,})(?:\n+|$))|(?:(?:^|\n+)(#{1,6})\s*(.+)(?:\n+|$))|(?:`([^`].*?)`)|(  \n\n*|\n{2,}|__|\*\*|[_*]|~~)|(?:{@(\w+)((?:\s+(?:"(?:\\"|[^"])*"|[^"}]*))*)})/gm,
+  // (?:<\s*(!20!\/)(!21!\w+)(!22! [^>]+)?>) - HTML Tag
+  let tokenizer = /((?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|(?:^``` *(\w*)\n([\s\S]*?)\n```$)|((?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)|((?:(?:^|\n)([>*+-]|\d+\.)\s+.*)+)|(?:\!\[([^\]]*?)\]\(([^\)]+?)\))|(\[)|(\](?:\(([^\)]+?)\))?)|(?:(?:^|\n+)([^\s].*)\n(\-{3,}|={3,})(?:\n+|$))|(?:(?:^|\n+)(#{1,6})\s*(.+)(?:\n+|$))|(?:`([^`].*?)`)|(  \n\n*|\n{2,}|__|\*\*|[_*]|~~)|(?:{@(\w+)((?:\s+(?:"(?:\\"|[^"])*"|[^"}]*))*)})|(?:<\s*(\/?)(\w+)( [^>]+)?>)/gm,
       context = [],
       out = '',
       links = prevLinks || {},
@@ -116,6 +119,47 @@ module.exports = function parse(md, prevLinks) {
     // Tags:
     else if (token[18]) {
       chunk = 'Magic handler(' + token[18] + '&' + token[19] + ')'
+    }
+    // Capture HTML tags
+    else if (token[21]) {
+      chunk = '';
+      if (token[20]) {
+        // Closing tag
+        if (tags.length) {
+          // Find closing tag
+          let i;
+          for (i = tags.length - 1; i >= 0; i--) {
+            if (tags[i].tag === token[21]) {
+              break;
+            }
+          }
+          if (i >= 0) {
+            let j;
+            // Close all tags
+            for (j = tags.length - 1; j >= i; j--) {
+              if (removeTags.indexOf(tags[j].tag.toLowerCase()) !== -1) {
+              } else if (skipTags.indexOf(tags[j].tag.toLowerCase()) !== -1) {
+                chunk = out + prev + chunk;
+              } else {
+                chunk = '<' + tags[j].tag + (tags[j].attributes || '') + '>' + out + prev + chunk + '</' + tags[j].tag + '>';
+              }
+              prev = '';
+              out = tags[j].out;
+            }
+            tags = tags.slice(0, i);
+          }
+        }
+      } else {
+        // Create new tag
+        tags.push({
+          tag: token[21],
+          attributes: token[22],
+          out: out + prev
+        });
+
+        prev = '';
+        out = '';
+      }
     }
     out += prev;
     out += chunk;
