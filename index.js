@@ -91,7 +91,8 @@ module.exports = function parse(md, options) {
       if (t.match(/\./)) {
         token[5] = token[5].replace(/^\d+/gm, '');
       }
-      inner = parse(outdent(token[5].replace(/^\s*[>*+.-]/gm, '')));
+      inner = parse(outdent(token[5].replace(/^\s*[>*+.-]/gm, '')),
+        Object.assign({}, options, { prevLinks: links }));
       if (t==='>') t = 'blockquote';
       else {
         t = t.match(/\./) ? 'ol' : 'ul';
@@ -114,7 +115,8 @@ module.exports = function parse(md, options) {
     // Headings:
     else if (token[12] || token[14]) {
       t = 'h' + (token[14] ? token[14].length : (token[13][0]==='='?1:2));
-      chunk = '<'+t+'>' + parse(token[12] || token[15], links) + '</'+t+'>';
+      chunk = '<'+t+'>' + parse(token[12] || token[15],
+        Object.assign({}, options, { prevLinks: links })) + '</'+t+'>';
     }
     // `code`:
     else if (token[16]) {
