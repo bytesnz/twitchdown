@@ -6,8 +6,6 @@ const TAGS = {
   ' ' : ['<br />'],
   '-': ['<hr />']
 };
-const removeTags = [ 'script' ];
-const skipTags = [];
 
 /** Outdent a string based on the first indented line's leading whitespace
  *  @private
@@ -24,7 +22,17 @@ function encodeAttr(str) {
 }
 
 // export default function parse(md, prevLinks) {
-module.exports = function parse(md, prevLinks) {
+module.exports = function parse(md, options) {
+  if (!options) {
+    options = {};
+  }
+  if (!options.removeTags) {
+    options.removeTags = ['script'];
+  }
+  if (!options.skipTags) {
+    options.skipTags = [];
+  }
+
   // (!1!(?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|
   // (?:^``` *(!2!\w*)\n(!3![\s\S]*?)\n```$)|  - Code block
   // (!4!(?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)| - Code continue
@@ -35,12 +43,12 @@ module.exports = function parse(md, prevLinks) {
   // (?:(?:^|\n+)(!14!#{1,6})\s*(!15!.+)(?:\n+|$))|  - Headings
   // (?:`(!16![^`].*?)`)|  - Inline code
   // (!17!  \n\n*|\n{2,}|__|\*\*|[_*]|~~)| - Formatters
-  // (?:{@(!18!\w+)(!19!(?:\s+(?:"(?:\\"|[^"])*"|[^"}]*))*)})| - Special MD Tag
+  // (?:{@(!18!\w+)(!19!(?:\s+(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})| - Special MD Tag
   // (?:<\s*(!20!\/)(!21!\w+)(!22! [^>]+)?>) - HTML Tag
-  let tokenizer = /((?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|(?:^``` *(\w*)\n([\s\S]*?)\n```$)|((?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)|((?:(?:^|\n)([>*+-]|\d+\.)\s+.*)+)|(?:\!\[([^\]]*?)\]\(([^\)]+?)\))|(\[)|(\](?:\(([^\)]+?)\))?)|(?:(?:^|\n+)([^\s].*)\n(\-{3,}|={3,})(?:\n+|$))|(?:(?:^|\n+)(#{1,6})\s*(.+)(?:\n+|$))|(?:`([^`].*?)`)|(  \n\n*|\n{2,}|__|\*\*|[_*]|~~)|(?:{@(\w+)((?:\s+(?:"(?:\\"|[^"])*"|[^"}]*))*)})|(?:<\s*(\/?)(\w+)( [^>]+)?>)/gm,
+  let tokenizer = /((?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|(?:^``` *(\w*)\n([\s\S]*?)\n```$)|((?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)|((?:(?:^|\n)([>*+-]|\d+\.)\s+.*)+)|(?:\!\[([^\]]*?)\]\(([^\)]+?)\))|(\[)|(\](?:\(([^\)]+?)\))?)|(?:(?:^|\n+)([^\s].*)\n(\-{3,}|={3,})(?:\n+|$))|(?:(?:^|\n+)(#{1,6})\s*(.+)(?:\n+|$))|(?:`([^`].*?)`)|(  \n\n*|\n{2,}|__|\*\*|[_*]|~~)|(?:{@(\w+)((?:\s+(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})|(?:<\s*(\/?)(\w+)( [^>]+)?>)/gm,
       context = [],
       out = '',
-      links = prevLinks || {},
+      links = options.prevLinks || {},
       last = 0,
       tags = [],
       chunk, prev, token, inner, t;
@@ -118,7 +126,21 @@ module.exports = function parse(md, prevLinks) {
     }
     // Tags:
     else if (token[18]) {
-      chunk = 'Magic handler(' + token[18] + '&' + token[19] + ')'
+      if (options.customTags && options.customTags[token[18]]) {
+        let tagTokenizer = /\s+(?:"((?:\\"|[^"])*)"|([^"\s}]+))/g,
+            parameters = [],
+            parameter;
+        while ( (parameter = tagTokenizer.exec(token[19])) ) {
+          parameters.push((parameter[1] && parameter[1].replace(/\\"/g, '"')) || parameter[2]);
+        }
+        if (parameters.length) {
+          chunk = options.customTags[token[18]](parameters);
+        } else {
+          chunk = options.customTags[token[18]]();
+        }
+      } else {
+        chunk = '';
+      }
     }
     // Capture HTML tags
     else if (token[21]) {
@@ -137,8 +159,8 @@ module.exports = function parse(md, prevLinks) {
             let j;
             // Close all tags
             for (j = tags.length - 1; j >= i; j--) {
-              if (removeTags.indexOf(tags[j].tag.toLowerCase()) !== -1) {
-              } else if (skipTags.indexOf(tags[j].tag.toLowerCase()) !== -1) {
+              if (options.removeTags.indexOf(tags[j].tag.toLowerCase()) !== -1) {
+              } else if (options.skipTags.indexOf(tags[j].tag.toLowerCase()) !== -1) {
                 chunk = out + prev + chunk;
               } else {
                 chunk = '<' + tags[j].tag + (tags[j].attributes || '') + '>' + out + prev + chunk + '</' + tags[j].tag + '>';

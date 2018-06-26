@@ -5,5 +5,8 @@
   "main": "index.jsx",
   "repository": "https://gitlab.com/bytesnz/reactdown.git",
   "author": "Jack Farley <or4e3dsw@bytes.nz>",
-  "license": "GPL-3.0"
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "ava": "^0.25.0"
+  }
 }
