@@ -1,6 +1,6 @@
 {
   "name": "reactdown",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Dead simple Markdown parser for (p)react",
   "main": "index.jsx",
   "repository": "https://gitlab.com/bytesnz/reactdown.git",
