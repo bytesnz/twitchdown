@@ -29,8 +29,8 @@ module.exports = function parse(md, options) {
   if (!options.removeTags) {
     options.removeTags = ['script'];
   }
-  if (!options.skipTags) {
-    options.skipTags = [];
+  if (!options.stripTags) {
+    options.stripTags = [];
   }
 
   // (!1!(?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|
@@ -162,7 +162,7 @@ module.exports = function parse(md, options) {
             // Close all tags
             for (j = tags.length - 1; j >= i; j--) {
               if (options.removeTags.indexOf(tags[j].tag.toLowerCase()) !== -1) {
-              } else if (options.skipTags.indexOf(tags[j].tag.toLowerCase()) !== -1) {
+              } else if (options.stripTags.indexOf(tags[j].tag.toLowerCase()) !== -1) {
                 chunk = out + prev + chunk;
               } else {
                 chunk = '<' + tags[j].tag + (tags[j].attributes || '') + '>' + out + prev + chunk + '</' + tags[j].tag + '>';
@@ -189,12 +189,20 @@ module.exports = function parse(md, options) {
     out += chunk;
   }
 
+  out = out + md.substring(last) + flush();
+
   // Close all open tags
   if (tags.length) {
     for (let i = tags.length - 1; i >= 0; i--) {
-      out = tags[i].out + '<!' + tags[i].tag + (tags[i].attributes || '') + '>' + out + chunk + '<!/' + tags[i].tag + '>';
+      if (options.removeTags.indexOf(tags[i].tag.toLowerCase()) !== -1) {
+        out = '';
+      } else if (options.stripTags.indexOf(tags[i].tag.toLowerCase()) !== -1) {
+      } else {
+        out = '<' + tags[i].tag + (tags[i].attributes || '') + '>' + out + '</' + tags[i].tag + '>';
+      }
+      out = tags[i].out + out;
     }
   }
 
-  return (out + md.substring(last) + flush()).trim();
+  return out.trim();
 }
