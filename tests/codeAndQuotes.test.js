@@ -2,33 +2,41 @@ import test from 'ava';
 import reactdown from '../';
 
 test('parses inline code', (t) => {
-  t.is('Here is some code <code>var a = 1</code>.', reactdown('Here is some code `var a = 1`.'));
+  t.deepEqual(['Here is some code', { type: 'code', props: null, children: ['var a = 1'] }, '.'], reactdown('Here is some code `var a = 1`.'));
 });
 
 test('escapes inline code', (t) => {
-  t.is('a <code>&lt;&quot;&gt;</code> b', reactdown('a `<">` b'));
+  t.deepEqual(['a', { type: 'code', props: null, children: [ '&lt;&quot;&gt;' ] }, 'b' ], reactdown('a `<">` b'));
 });
 
 test('parses three backtricks (```) as a code block', (t) => {
-  t.is('<pre class="code ">function codeBlocks() {\n\treturn &quot;Can be inserted&quot;;\n}</pre>', reactdown('```\nfunction codeBlocks() {\n\treturn "Can be inserted";\n}\n```'));
+  t.deepEqual([ { type: 'pre', props: { className: 'code' }, children: [ 'function codeBlocks() {\n\treturn &quot;Can be inserted&quot;;\n}' ] } ], reactdown('```\nfunction codeBlocks() {\n\treturn "Can be inserted";\n}\n```'));
 
-  t.is('<pre class="code js">function codeBlocks() {\n\treturn &quot;Can be inserted&quot;;\n}</pre>', reactdown('```js\nfunction codeBlocks() {\n\treturn "Can be inserted";\n}\n```'));
+  t.deepEqual([ { type: 'pre', props: { className: 'code js' }, children: [ 'function codeBlocks() {\n\treturn &quot;Can be inserted&quot;;\n}' ] } ], reactdown('```js\nfunction codeBlocks() {\n\treturn "Can be inserted";\n}\n```'));
 });
 
 test('parses tabs as a code poetry block', (t) => {
-  t.is('<pre class="code poetry">var a = 1</pre>', reactdown('\tvar a = 1'));
+  t.deepEqual([ { type: 'pre', props: { className: 'code poetry' }, children: [ 'var a = 1' ] } ], reactdown('\tvar a = 1'));
 });
 
 test('escapes code/quote blocks', (t) => {
-  t.is('<pre class="code ">&lt;foo&gt;</pre>', reactdown('```\n<foo>\n```'));
-  t.is('<pre class="code poetry">&lt;foo&gt;</pre>', reactdown('\t<foo>'));
+  t.deepEqual([ { type: 'pre', props: { className: 'code' }, children: [ '&lt;foo&gt;' ] } ], reactdown('```\n<foo>\n```'));
+  t.deepEqual([ { type: 'pre', props: { className: 'code poetry' }, children: [ '&lt;foo&gt;' ] } ], reactdown('\t<foo>'));
 });
 
 test('parses a block quote', (t) => {
-  t.is('<blockquote>To be or not to be</blockquote>', reactdown('> To be or not to be'));
+  t.deepEqual([ { type: 'blockquote', props: null, children: [ 'To be or not to be' ] } ], reactdown('> To be or not to be'));
 });
 
 test('parses lists within block quotes', (t) => {
-  t.is('<blockquote><ul><li>one</li><li>two</li><li><strong>three</strong></li></ul></blockquote>\nhello', reactdown('> - one\n> - two\n> - **three**\nhello'));
+  t.deepEqual([ { type: 'blockquote', props: null, children: [
+    { type: 'ul', props: null, children: [
+      { type: 'li', props: null, children: [ 'one' ] },
+      { type: 'li', props: null, children: [ 'two' ] },
+      { type: 'li', props: null, children: [
+        { type: 'strong', props: null, children: [ 'three' ] }
+      ] }
+    ] }
+  ] }, 'hello' ], reactdown('> - one\n> - two\n> - **three**\nhello'));
 });
 

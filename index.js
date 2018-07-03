@@ -1,10 +1,10 @@
 const TAGS = {
-  '' : ['<em>','</em>'],
-  _ : ['<strong>','</strong>'],
-  '~' : ['<s>','</s>'],
-  '\n' : ['<br />'],
-  ' ' : ['<br />'],
-  '-': ['<hr />']
+  '' : [null, 'em'],
+  _ : [null, 'strong'],
+  '~' : [null, 's'],
+  '\n' : ['br', null],
+  ' ' : ['br', null],
+  '-': ['hr', null]
 };
 
 /** Outdent a string based on the first indented line's leading whitespace
@@ -22,6 +22,9 @@ function encodeAttr(str) {
 }
 
 // export default function parse(md, prevLinks) {
+/**
+ * Turn Markdown into react-like objects
+ */
 module.exports = function parse(md, options) {
   if (!options) {
     options = {};
@@ -31,6 +34,13 @@ module.exports = function parse(md, options) {
   }
   if (!options.stripTags) {
     options.stripTags = [];
+  }
+
+  let e;
+  if (!options.createElement) {
+    e = (type, props, children) => ({ type, props, children });
+  } else {
+    e = options.createElement;
   }
 
   // (!1!(?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|
@@ -47,19 +57,42 @@ module.exports = function parse(md, options) {
   // (?:<\s*(!20!\/)(!21!\w+)(!22! [^>]+)?>) - HTML Tag
   let tokenizer = /((?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|(?:^``` *(\w*)\n([\s\S]*?)\n```$)|((?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)|((?:(?:^|\n)([>*+-]|\d+\.)\s+.*)+)|(?:\!\[([^\]]*?)\]\(([^\)]+?)\))|(\[)|(\](?:\(([^\)]+?)\))?)|(?:(?:^|\n+)([^\s].*)\n(\-{3,}|={3,})(?:\n+|$))|(?:(?:^|\n+)(#{1,6})\s*(.+)(?:\n+|$))|(?:`([^`].*?)`)|(  \n\n*|\n{2,}|__|\*\*|[_*]|~~)|(?:{@(\w+)((?:\s+(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})|(?:<\s*(\/?)(\w+)( [^>]+)?>)/gm,
       context = [],
-      out = '',
+      out = [],
       links = options.prevLinks || {},
       last = 0,
       tags = [],
       chunk, prev, token, inner, t;
 
   function tag(token) {
-    var desc = TAGS[token.replace(/\*/g,'_')[1] || ''],
-      end = context[context.length-1]==token;
-    if (!desc) return token;
-    if (!desc[1]) return desc[0];
-    context[end?'pop':'push'](token);
-    return desc[end|0];
+    var desc = TAGS[token.replace(/\*/g,'_')[1] || ''];
+
+    if (desc[1] && tags.length && tags[tags.length - 1].tag === desc[1]
+        && tags[tags.length - 1].token === token) {
+      if (prev) {
+        out.push(prev);
+        prev = '';
+      }
+      const tag = tags.pop();
+      tag.out.push(e(tag.tag, null, out));
+      out = tag.out;
+    } else {
+      if (prev) {
+        out.push(clean(prev));
+        prev = '';
+      }
+      if (desc[0]) {
+        out.push(e(desc[0]));
+      }
+
+      if (desc[1]) {
+        tags.push({
+          tag: desc[1],
+          token,
+          out
+        });
+        out = [];
+      }
+    }
   }
 
   function flush() {
@@ -68,13 +101,72 @@ module.exports = function parse(md, options) {
     return str;
   }
 
+  function flushTo(tag, justAbove) {
+    var target = 0;
+
+    if (!tags.length) {
+      return;
+    }
+
+    if (tag) {
+      for (target = tags.length - 1; target >= 0; target--) {
+        if (tags[target].tag === tag) {
+          break;
+        }
+      }
+
+      if (justAbove) {
+        target++;
+      }
+
+      if (target < 0 || target >= tags.length) {
+        return tags.length;
+      }
+    }
+
+    var i;
+    for (i = tags.length - 1; i >= target; i--) {
+      if (options.removeTags.indexOf(tags[i].tag.toLowerCase()) !== -1) {
+        chunk = null;
+      } else {
+        if (prev) {
+          out.push(prev)
+        }
+
+        if (options.stripTags.indexOf(tags[i].tag.toLowerCase()) !== -1) {
+          chunk = null;
+          tags[i].out = tags[i].out.concat(out);
+        } else {
+          tags[i].out.push(e(tags[i].tag, (tags[i].attributes || null), out));
+        }
+      }
+      prev = null;
+      chunk = null;
+      out = tags[i].out;
+    }
+
+    chunk = null;
+
+    if (target) {
+      tags = tags.slice(0, target);
+    } else {
+      tags = [];
+    }
+
+    return tags.length
+  }
+
+  function clean(string) {
+    return string.replace('\n', ' ').replace(/\s+/, ' ').trim();
+  }
+
   md = md.replace(/^\[(.+?)\]:\s*(.+)$/gm, (s, name, url) => {
     links[name.toLowerCase()] = url;
     return '';
   }).replace(/^\n+|\n+$/g, '');
 
   while ( (token=tokenizer.exec(md)) ) {
-    prev = md.substring(last, token.index);
+    prev = md.substring(last, token.index).trim();
     last = tokenizer.lastIndex;
     chunk = token[0];
 
@@ -83,7 +175,9 @@ module.exports = function parse(md, options) {
     }
     // Code/Indent blocks:
     else if (token[3] || token[4]) {
-      chunk = '<pre class="code '+(token[4]?'poetry':token[2].toLowerCase())+'">'+outdent(encodeAttr(token[3] || token[4]).replace(/^\n+|\n+$/g, ''))+'</pre>';
+      chunk = e('pre', {
+        className: 'code'+ (token[4] ? ' poetry' : token[2] && ' ' + token[2].toLowerCase())
+      }, [ outdent(encodeAttr(token[3] || token[4]).replace(/^\n+|\n+$/g, '')) ]);
     }
     // > Quotes, -* lists:
     else if (token[6]) {
@@ -91,40 +185,68 @@ module.exports = function parse(md, options) {
       if (t.match(/\./)) {
         token[5] = token[5].replace(/^\d+/gm, '');
       }
-      inner = parse(outdent(token[5].replace(/^\s*[>*+.-]/gm, '')),
-        Object.assign({}, options, { prevLinks: links }));
-      if (t==='>') t = 'blockquote';
-      else {
-        t = t.match(/\./) ? 'ol' : 'ul';
-        inner = inner.replace(/^(.*)(\n|$)/gm, '<li>$1</li>');
+      const parseOptions = Object.assign({}, options, { prevLinks: links });
+      if (t === '>') {
+        chunk = e('blockquote', null, parse(outdent(token[5].replace(/^>\s*/gm, '')),
+            parseOptions));
+      } else {
+        t = t.match(/^\d+\./) ? 'ol' : 'ul';
+        // const listSplitter = /^(.*)(\n|$)/gm;
+        const listSplitter = /^[*+-.]\s(.*)/gm;
+        const items = [];
+        let item;
+        while (item = listSplitter.exec(token[5])) {
+          items.push(e('li', null, parse(item[1], parseOptions)));
+        }
+        chunk = e(t, null, items);
       }
-      chunk = '<'+t+'>' + inner + '</'+t+'>';
     }
     // Images:
     else if (token[8]) {
-      chunk = `<img src="${encodeAttr(token[8])}" alt="${encodeAttr(token[7])}">`;
+      chunk = e('img', {
+        src: encodeAttr(token[8]),
+        alt: encodeAttr(token[7])
+      });
     }
     // Links:
     else if (token[10]) {
-      out = out.replace('<a>', `<a href="${encodeAttr(token[11] || links[prev.toLowerCase()])}">`);
-      chunk = flush() + '</a>';
+      flushTo('a', true);
+      if (tags.length) {
+        tags[tags.length - 1].attributes = {
+          href: encodeAttr(token[11] || links[prev.toLowerCase().trim()])
+        };
+        chunk = flush();
+      }
+      flushTo('a');
     }
     else if (token[9]) {
-      chunk = '<a>';
+      if (prev) {
+        out.push(clean(prev));
+        prev = '';
+      }
+      // Start a tag for link
+      tags.push({
+        index: token.index,
+        tag: 'a',
+        out
+      });
+      out = [];
+      chunk = '';
     }
     // Headings:
     else if (token[12] || token[14]) {
       t = 'h' + (token[14] ? token[14].length : (token[13][0]==='='?1:2));
-      chunk = '<'+t+'>' + parse(token[12] || token[15],
-        Object.assign({}, options, { prevLinks: links })) + '</'+t+'>';
+      chunk = e(t, null, parse(token[12] || token[15],
+        Object.assign({}, options, { prevLinks: links })));
     }
     // `code`:
     else if (token[16]) {
-      chunk = '<code>'+encodeAttr(token[16])+'</code>';
+      chunk = e('code', null, [ encodeAttr(token[16]) ]);
     }
     // Inline formatting: *em*, **strong** & friends
     else if (token[17] || token[1]) {
-      chunk = tag(token[17] || '--');
+      tag(token[17] || '--');
+      chunk = null;
     }
     // Tags:
     else if (token[18]) {
@@ -141,7 +263,7 @@ module.exports = function parse(md, options) {
           chunk = options.customTags[token[18]]();
         }
       } else {
-        chunk = '';
+        chunk = null;
       }
     }
     // Capture HTML tags
@@ -150,59 +272,39 @@ module.exports = function parse(md, options) {
       if (token[20]) {
         // Closing tag
         if (tags.length) {
-          // Find closing tag
-          let i;
-          for (i = tags.length - 1; i >= 0; i--) {
-            if (tags[i].tag === token[21]) {
-              break;
-            }
-          }
-          if (i >= 0) {
-            let j;
-            // Close all tags
-            for (j = tags.length - 1; j >= i; j--) {
-              if (options.removeTags.indexOf(tags[j].tag.toLowerCase()) !== -1) {
-              } else if (options.stripTags.indexOf(tags[j].tag.toLowerCase()) !== -1) {
-                chunk = out + prev + chunk;
-              } else {
-                chunk = '<' + tags[j].tag + (tags[j].attributes || '') + '>' + out + prev + chunk + '</' + tags[j].tag + '>';
-              }
-              prev = '';
-              out = tags[j].out;
-            }
-            tags = tags.slice(0, i);
-          }
+          flushTo(token[21]);
         }
       } else {
         // Create new tag
+        if (prev) {
+          out.push(clean(prev));
+        }
         tags.push({
+          index: token.index,
           tag: token[21],
           attributes: token[22],
-          out: out + prev
+          out
         });
+        out = [];
 
         prev = '';
-        out = '';
       }
     }
-    out += prev;
-    out += chunk;
-  }
+    if (prev) {
+      out.push(clean(prev));
+    }
 
-  out = out + md.substring(last) + flush();
-
-  // Close all open tags
-  if (tags.length) {
-    for (let i = tags.length - 1; i >= 0; i--) {
-      if (options.removeTags.indexOf(tags[i].tag.toLowerCase()) !== -1) {
-        out = '';
-      } else if (options.stripTags.indexOf(tags[i].tag.toLowerCase()) !== -1) {
-      } else {
-        out = '<' + tags[i].tag + (tags[i].attributes || '') + '>' + out + '</' + tags[i].tag + '>';
-      }
-      out = tags[i].out + out;
+    if (chunk) {
+      out.push(chunk);
     }
   }
 
-  return out.trim();
+  chunk = clean(md.substring(last));
+  if (chunk) {
+    out.push(chunk)
+  }
+
+  flushTo();
+
+  return out;
 }
