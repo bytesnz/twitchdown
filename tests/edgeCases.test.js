@@ -6,7 +6,7 @@ test.only('should close unclosed tags', (t) => {
   t.deepEqual([ 'foo', { type: 'strong', props: null, children: [] } ], reactdown('foo**'));
   t.deepEqual([
     { type: 'a', props: { href: '#winning' }, children: [
-      'some',
+      'some ',
       { type: 'strong', props: null, children: [ 'bold text' ] }
     ] }
   ], reactdown('[some **bold text](#winning)'));

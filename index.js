@@ -157,7 +157,7 @@ module.exports = function parse(md, options) {
   }
 
   function clean(string) {
-    return string.replace('\n', ' ').replace(/\s+/, ' ').trim();
+    return string.replace(/^\n/, '').replace('\n', ' ').replace(/\1\s+/, ' ');
   }
 
   md = md.replace(/^\[(.+?)\]:\s*(.+)$/gm, (s, name, url) => {
@@ -166,7 +166,7 @@ module.exports = function parse(md, options) {
   }).replace(/^\n+|\n+$/g, '');
 
   while ( (token=tokenizer.exec(md)) ) {
-    prev = md.substring(last, token.index).trim();
+    prev = md.substring(last, token.index);
     last = tokenizer.lastIndex;
     chunk = token[0];
 

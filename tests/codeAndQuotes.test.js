@@ -2,11 +2,11 @@ import test from 'ava';
 import reactdown from '../';
 
 test('parses inline code', (t) => {
-  t.deepEqual(['Here is some code', { type: 'code', props: null, children: ['var a = 1'] }, '.'], reactdown('Here is some code `var a = 1`.'));
+  t.deepEqual(['Here is some code ', { type: 'code', props: null, children: ['var a = 1'] }, '.'], reactdown('Here is some code `var a = 1`.'));
 });
 
 test('escapes inline code', (t) => {
-  t.deepEqual(['a', { type: 'code', props: null, children: [ '&lt;&quot;&gt;' ] }, 'b' ], reactdown('a `<">` b'));
+  t.deepEqual(['a ', { type: 'code', props: null, children: [ '&lt;&quot;&gt;' ] }, ' b' ], reactdown('a `<">` b'));
 });
 
 test('parses three backtricks (```) as a code block', (t) => {
@@ -20,7 +20,7 @@ test('uses highlight function if given in options', (t) => {
     return ((language && language + ' ') || '') + 'CODE ' + content
   };
 
-  t.deepEqual(['a', 'CODE <">', 'b' ], reactdown('a `<">` b', {
+  t.deepEqual(['a ', { type: 'code', props: null, children: [ '&lt;&quot;&gt;' ] }, ' b' ], reactdown('a `<">` b', {
     highlight: highlighter
   }));
 

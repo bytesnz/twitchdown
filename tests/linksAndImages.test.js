@@ -20,16 +20,16 @@ test('parses images within links', (t) => {
   ] } ], reactdown('[![](toc.png)](#toc)'));
   t.deepEqual([ { type: 'a', props: { href: '#a' }, children: [
     { type: 'img', props: { src: 'a.png', alt: 'a' }, children: undefined }
-  ] }, {type: 'a', props: { href: '#b' }, children: [
+  ] }, ' ', {type: 'a', props: { href: '#b' }, children: [
     { type: 'img', props: { src: 'b.png', alt: 'b' }, children: undefined }
   ] } ], reactdown('[![a](a.png)](#a) [![b](b.png)](#b)'));
 });
 
 test('parses reference links', (t) => {
-  t.deepEqual([ 'hello', { type: 'a', props: { href: 'http://world.com' }, children: [ 'World' ] }, '!' ], reactdown('\nhello [World]!\n[world]: http://world.com'));
+  t.deepEqual([ 'hello ', { type: 'a', props: { href: 'http://world.com' }, children: [ 'World' ] }, '!' ], reactdown('\nhello [World]!\n[world]: http://world.com'));
 });
 
 test('parses reference links without creating excessive linebreaks', (t) => {
-  t.deepEqual([ 'hello', { type: 'a', props: { href: 'http://world.com' }, children: [ 'World' ] }, '!' ], reactdown('\nhello [World]!\n\n[world]: http://world.com'));
+  t.deepEqual([ 'hello ', { type: 'a', props: { href: 'http://world.com' }, children: [ 'World' ] }, '!' ], reactdown('\nhello [World]!\n\n[world]: http://world.com'));
 });
 
