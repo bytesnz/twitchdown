@@ -15,6 +15,24 @@ test('parses three backtricks (```) as a code block', (t) => {
   t.deepEqual([ { type: 'pre', props: { className: 'code js' }, children: [ 'function codeBlocks() {\n\treturn &quot;Can be inserted&quot;;\n}' ] } ], reactdown('```js\nfunction codeBlocks() {\n\treturn "Can be inserted";\n}\n```'));
 });
 
+test('uses highlight function if given in options', (t) => {
+  const highlighter = (content, language) => {
+    return ((language && language + ' ') || '') + 'CODE ' + content
+  };
+
+  t.deepEqual(['a', 'CODE <">', 'b' ], reactdown('a `<">` b', {
+    highlight: highlighter
+  }));
+
+  t.deepEqual([ 'CODE function codeBlocks() {\n\treturn "Can be inserted";\n}' ], reactdown('```\nfunction codeBlocks() {\n\treturn "Can be inserted";\n}\n```', {
+    highlight: highlighter
+  }));
+
+  t.deepEqual([ 'js CODE function codeBlocks() {\n\treturn "Can be inserted";\n}' ], reactdown('```js\nfunction codeBlocks() {\n\treturn "Can be inserted";\n}\n```', {
+    highlight: highlighter
+  }));
+});
+
 test('parses tabs as a code poetry block', (t) => {
   t.deepEqual([ { type: 'pre', props: { className: 'code poetry' }, children: [ 'var a = 1' ] } ], reactdown('\tvar a = 1'));
 });

@@ -174,10 +174,20 @@ module.exports = function parse(md, options) {
       // escaped
     }
     // Code/Indent blocks:
-    else if (token[3] || token[4]) {
+    else if (token[3]) {
+      if (options.highlight) {
+        chunk = options.highlight(token[3], token[2])
+      } else {
+        chunk = e('pre', {
+          className: 'code' + (token[2] && ' ' + token[2].toLowerCase())
+        }, [ outdent(encodeAttr(token[3]).replace(/^\n+|\n+$/g, '')) ]);
+      }
+    }
+    // Quote (Indent) blocks:
+    else if (token[4]) {
       chunk = e('pre', {
-        className: 'code'+ (token[4] ? ' poetry' : token[2] && ' ' + token[2].toLowerCase())
-      }, [ outdent(encodeAttr(token[3] || token[4]).replace(/^\n+|\n+$/g, '')) ]);
+        className: 'code poetry'
+      }, [ outdent(encodeAttr(token[4]).replace(/^\n+|\n+$/g, '')) ]);
     }
     // > Quotes, -* lists:
     else if (token[6]) {
@@ -241,7 +251,11 @@ module.exports = function parse(md, options) {
     }
     // `code`:
     else if (token[16]) {
-      chunk = e('code', null, [ encodeAttr(token[16]) ]);
+      if (options.highlight) {
+        chunk = options.highlight(token[16])
+      } else {
+        chunk = e('code', null, [ encodeAttr(token[16]) ]);
+      }
     }
     // Inline formatting: *em*, **strong** & friends
     else if (token[17] || token[1]) {
