@@ -81,7 +81,18 @@ module.exports = function parse(md, options) {
         prev = '';
       }
       if (desc[0]) {
-        out.push(e(desc[0]));
+        if (options.paragraphs && desc[0] === 'br' && tags.length && tags[tags.length - 1].tag === 'p') {
+          // Create a new paragraph
+          flushTo('p');
+          tags.push({
+            tag: 'p',
+            token,
+            out
+          });
+          out = [];
+        } else {
+          out.push(e(desc[0]));
+        }
       }
 
       if (desc[1]) {
@@ -157,7 +168,22 @@ module.exports = function parse(md, options) {
   }
 
   function clean(string) {
-    return string.replace(/^\n/, '').replace('\n', ' ').replace(/\1\s+/, ' ');
+    return string.replace(/^\n/, '').replace('\n', ' ').replace(/\s+/, ' ');
+  }
+
+  function addPrev() {
+    if (prev) {
+      prev = clean(prev);
+      if (options.paragraphs && !tags.length) {
+        tags.push({
+          tag: 'p',
+          out
+        });
+        out = [];
+      }
+      out.push(clean(prev));
+      prev = '';
+    }
   }
 
   md = md.replace(/^\[(.+?)\]:\s*(.+)$/gm, (s, name, url) => {
@@ -175,6 +201,9 @@ module.exports = function parse(md, options) {
     }
     // Code/Indent blocks:
     else if (token[3]) {
+      if (options.paragraphs) {
+        flushTo('p');
+      }
       if (options.highlight) {
         chunk = options.highlight(token[3], token[2])
       } else {
@@ -185,6 +214,9 @@ module.exports = function parse(md, options) {
     }
     // Quote (Indent) blocks:
     else if (token[4]) {
+      if (options.paragraphs) {
+        flushTo('p');
+      }
       chunk = e('pre', {
         className: 'code poetry'
       }, [ outdent(encodeAttr(token[4]).replace(/^\n+|\n+$/g, '')) ]);
@@ -195,7 +227,11 @@ module.exports = function parse(md, options) {
       if (t.match(/\./)) {
         token[5] = token[5].replace(/^\d+/gm, '');
       }
-      const parseOptions = Object.assign({}, options, { prevLinks: links });
+      if (options.paragraphs) {
+        addPrev();
+        flushTo('p');
+      }
+      const parseOptions = Object.assign({}, options, { prevLinks: links, paragraphs: false });
       if (t === '>') {
         chunk = e('blockquote', null, parse(outdent(token[5].replace(/^>\s*/gm, '')),
             parseOptions));
@@ -213,6 +249,14 @@ module.exports = function parse(md, options) {
     }
     // Images:
     else if (token[8]) {
+      addPrev();
+      if (options.paragraphs && !tags.length) {
+        tags.push({
+          tag: 'p',
+          out
+        });
+        out = [];
+      }
       chunk = e('img', {
         src: encodeAttr(token[8]),
         alt: encodeAttr(token[7])
@@ -230,9 +274,13 @@ module.exports = function parse(md, options) {
       flushTo('a');
     }
     else if (token[9]) {
-      if (prev) {
-        out.push(clean(prev));
-        prev = '';
+      addPrev();
+      if (options.paragraphs && !tags.length) {
+        tags.push({
+          tag: 'p',
+          out
+        });
+        out = [];
       }
       // Start a tag for link
       tags.push({
@@ -246,8 +294,12 @@ module.exports = function parse(md, options) {
     // Headings:
     else if (token[12] || token[14]) {
       t = 'h' + (token[14] ? token[14].length : (token[13][0]==='='?1:2));
+      if (options.paragraphs) {
+        addPrev();
+        flushTo('p');
+      }
       chunk = e(t, null, parse(token[12] || token[15],
-        Object.assign({}, options, { prevLinks: links })));
+        Object.assign({}, options, { prevLinks: links, paragraphs: false })));
     }
     // `code`:
     else if (token[16]) {
@@ -286,9 +338,7 @@ module.exports = function parse(md, options) {
         }
       } else {
         // Create new tag
-        if (prev) {
-          out.push(clean(prev));
-        }
+        addPrev();
         tags.push({
           index: token.index,
           tag: token[21],
@@ -300,19 +350,16 @@ module.exports = function parse(md, options) {
         prev = '';
       }
     }
-    if (prev) {
-      out.push(clean(prev));
-    }
+
+    addPrev();
 
     if (chunk) {
       out.push(chunk);
     }
   }
 
-  chunk = clean(md.substring(last));
-  if (chunk) {
-    out.push(chunk)
-  }
+  prev = md.substring(last);
+  addPrev();
 
   flushTo();
 

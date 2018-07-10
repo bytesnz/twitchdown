@@ -26,3 +26,8 @@
 2018-07-09T06:46:53.949Z	git:react	0:15:15
 2018-07-09T06:58:04.315Z	git:react	0:05:59
 2018-07-09T17:52:29.504Z	git:react	0:24:07
+2018-07-09T18:08:21.873Z	git:react	Add p tags around root text
+2018-07-09T18:08:42.480Z	git:react	Fix inline code (should be code instead of pre)
+2018-07-09T19:24:52.915Z	git:react	0:16:21
+2018-07-10T17:37:24.092Z	git:react	Fix trimming on creating prev
+2018-07-10T19:50:26.683Z	git:react	0:29:16
