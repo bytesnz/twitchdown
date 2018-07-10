@@ -251,11 +251,7 @@ module.exports = function parse(md, options) {
     }
     // `code`:
     else if (token[16]) {
-      if (options.highlight) {
-        chunk = options.highlight(token[16])
-      } else {
-        chunk = e('code', null, [ encodeAttr(token[16]) ]);
-      }
+      chunk = e('code', null, [ encodeAttr(token[16]) ]);
     }
     // Inline formatting: *em*, **strong** & friends
     else if (token[17] || token[1]) {
