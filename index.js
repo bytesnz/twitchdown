@@ -21,7 +21,7 @@ function encodeAttr(str) {
   return (str+'').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// export default function parse(md, prevLinks) {
+// export default function parse(md, referenceLinks) {
 /**
  * Turn Markdown into react-like objects
  */
@@ -58,7 +58,7 @@ module.exports = function parse(md, options) {
   let tokenizer = /((?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|(?:^``` *(\w*)\n([\s\S]*?)\n```$)|((?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)|((?:(?:^|\n)([>*+-]|\d+\.)\s+.*)+)|(?:\!\[([^\]]*?)\]\(([^\)]+?)\))|(\[)|(\](?:\(([^\)]+?)\))?)|(?:(?:^|\n+)([^\s].*)\n(\-{3,}|={3,})(?:\n+|$))|(?:(?:^|\n+)(#{1,6})\s*(.+)(?:\n+|$))|(?:`([^`].*?)`)|(  \n\n*|\n{2,}|__|\*\*|[_*]|~~)|(?:{@(\w+)((?:\s+(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})|(?:<\s*(\/?)(\w+)( [^>]+)?>)/gm,
       context = [],
       out = [],
-      links = options.prevLinks || {},
+      links = options.referenceLinks || {},
       last = 0,
       tags = [],
       chunk, prev, token, inner, t;
@@ -231,7 +231,7 @@ module.exports = function parse(md, options) {
         addPrev();
         flushTo('p');
       }
-      const parseOptions = Object.assign({}, options, { prevLinks: links, paragraphs: false });
+      const parseOptions = Object.assign({}, options, { referenceLinks: links, paragraphs: false });
       if (t === '>') {
         chunk = e('blockquote', null, parse(outdent(token[5].replace(/^>\s*/gm, '')),
             parseOptions));
@@ -299,7 +299,7 @@ module.exports = function parse(md, options) {
         flushTo('p');
       }
       chunk = e(t, null, parse(token[12] || token[15],
-        Object.assign({}, options, { prevLinks: links, paragraphs: false })));
+        Object.assign({}, options, { referenceLinks: links, paragraphs: false })));
     }
     // `code`:
     else if (token[16]) {

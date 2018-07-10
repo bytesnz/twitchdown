@@ -29,6 +29,10 @@ test('parses reference links', (t) => {
   t.deepEqual([ 'hello ', { type: 'a', props: { href: 'http://world.com' }, children: [ 'World' ] }, '!' ], reactdown('\nhello [World]!\n[world]: http://world.com'));
 });
 
+test('use given reference links', (t) => {
+  t.deepEqual([ 'hello ', { type: 'a', props: { href: 'http://world.com' }, children: [ 'World' ] }, '!' ], reactdown('\nhello [World]!', { referenceLinks: { world: 'http://world.com' } }));
+});
+
 test('parses reference links without creating excessive linebreaks', (t) => {
   t.deepEqual([ 'hello ', { type: 'a', props: { href: 'http://world.com' }, children: [ 'World' ] }, '!' ], reactdown('\nhello [World]!\n\n[world]: http://world.com'));
 });
