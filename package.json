@@ -1,8 +1,11 @@
 {
   "name": "reactdown",
-  "version": "0.1.0",
-  "description": "Dead simple Markdown parser for (p)react",
-  "main": "index.jsx",
+  "version": "1.0.0",
+  "description": "Dead simple Markdown parser for react-like libraries",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava -v"
+  },
   "repository": "https://gitlab.com/bytesnz/reactdown.git",
   "author": "Jack Farley <or4e3dsw@bytes.nz>",
   "license": "GPL-3.0",

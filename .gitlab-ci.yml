@@ -1,0 +1,35 @@
+image: node:9
+
+stages:
+  - test
+  - tag
+  - publish
+
+test:
+  stage: test
+  before_script:
+    - npm install
+  script:
+    - npm run test
+  only:
+    - branches
+
+tag:
+  stage: tag
+  script:
+    - export VERSION=$(node -e "console.log(require('./package.json').version)")
+    - git status
+    - git remote -v
+    - git remote set-url origin ${GLT}
+    - git tag v$VERSION
+    - git push origin v$VERSION
+  only:
+    - master@bytesnz/reactdown
+
+publish:
+  stage: publish
+  script:
+    - echo '//registry.npmjs.org/:_authToken=${NPMT}' > .npmrc
+    - npm publish
+  only:
+    - master@bytesnz/reactdown
