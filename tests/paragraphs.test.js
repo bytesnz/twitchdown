@@ -1,8 +1,8 @@
 import test from 'ava';
-import reactdown from '../';
+import twitchdown from '../';
 
 test('wraps text in a paragraph if enabled', (t) => {
-  t.deepEqual([ { type: 'p', props: null, children: [ 'hello' ] } ], reactdown('hello', {
+  t.deepEqual([ { type: 'p', props: null, children: [ 'hello' ] } ], twitchdown('hello', {
     paragraphs: true
   }));
 });
@@ -13,14 +13,14 @@ test('doesnt wrap headings, code blocks and lists in paragraphs', (t) => {
     { type: 'p', props: null, children: [ 'hello you' ] },
     { type: 'h2', props: null, children: [ 'subheading' ] },
     { type: 'p', props: null, children: [ 'bye' ] }
-  ], reactdown('#heading\nhello\n you\n##subheading\nbye', {
+  ], twitchdown('#heading\nhello\n you\n##subheading\nbye', {
     paragraphs: true
   }));
   t.deepEqual([
     { type: 'p', props: null, children: [ 'hello' ] },
     { type: 'blockquote', props: null, children: [ 'quote' ] },
     { type: 'p', props: null, children: [ 'bye' ] }
-  ], reactdown('hello\n> quote\nbye', {
+  ], twitchdown('hello\n> quote\nbye', {
     paragraphs: true
   }));
   t.deepEqual([
@@ -29,7 +29,7 @@ test('doesnt wrap headings, code blocks and lists in paragraphs', (t) => {
       { type: 'li', props: null, children: [ 'item' ] }
     ] },
     { type: 'p', props: null, children: [ 'bye' ] }
-  ], reactdown('hello\n- item\nbye', {
+  ], twitchdown('hello\n- item\nbye', {
     paragraphs: true
   }));
 });
@@ -41,7 +41,7 @@ test('Puts links and images in paragraphs', (t) => {
       { type: 'a', props: { href: '#test' }, children: [ 'link' ] },
       ' again'
     ] }
-  ], reactdown('test [link](#test) again', {
+  ], twitchdown('test [link](#test) again', {
     paragraphs: true
   }));
   t.deepEqual([
@@ -49,7 +49,7 @@ test('Puts links and images in paragraphs', (t) => {
       { type: 'a', props: { href: '#test' }, children: [ 'link' ] },
       ' woot'
     ] }
-  ], reactdown('[link](#test) woot', {
+  ], twitchdown('[link](#test) woot', {
     paragraphs: true
   }));
   t.deepEqual([
@@ -58,7 +58,7 @@ test('Puts links and images in paragraphs', (t) => {
       { type: 'img', props: { src: 'image.png', alt: 'image' }, children: undefined },
       ' again'
     ] }
-  ], reactdown('test ![image](image.png) again', {
+  ], twitchdown('test ![image](image.png) again', {
     paragraphs: true
   }));
   t.deepEqual([
@@ -66,7 +66,7 @@ test('Puts links and images in paragraphs', (t) => {
       { type: 'img', props: { src: 'image.png', alt: 'image' }, children: undefined },
       ' woot'
     ] }
-  ], reactdown('![image](image.png) woot', {
+  ], twitchdown('![image](image.png) woot', {
     paragraphs: true
   }));
 });

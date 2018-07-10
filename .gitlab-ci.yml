@@ -24,7 +24,7 @@ tag:
     - git tag v$VERSION
     - git push origin v$VERSION
   only:
-    - master@bytesnz/reactdown
+    - master@bytesnz/twitchdown
 
 publish:
   stage: publish
@@ -32,4 +32,4 @@ publish:
     - echo '//registry.npmjs.org/:_authToken=${NPMT}' > .npmrc
     - npm publish
   only:
-    - master@bytesnz/reactdown
+    - master@bytesnz/twitchdown

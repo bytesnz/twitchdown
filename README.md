@@ -1,4 +1,4 @@
-reactdown
+twitchdown
 =============
 
 Dead simple Markdown parser for react-like libraries
@@ -19,7 +19,7 @@ work
 
 ## Example
 ```javascript
-import reactdown from 'reactdown';
+import twitchdown from 'twitchdown';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -36,7 +36,7 @@ This is some <em>test</em> markdown
 - one {@custom first second "third"}
 `;
 
-ReactDOM.render(document.getElementById('app'), reactdown(markdown, {
+ReactDOM.render(document.getElementById('app'), twitchdown(markdown, {
   // createElement function
   createElement: React.createElement,
   // These HTML tags and their contents will be completely removed (defaults to <script> tags)

@@ -1,12 +1,13 @@
 {
-  "name": "reactdown",
+  "name": "twitchdown",
   "version": "1.0.0",
   "description": "Dead simple Markdown parser for react-like libraries",
+  "keywords": [ "react", "markdown", "highlight", "simple" ],
   "main": "index.js",
   "scripts": {
     "test": "ava -v"
   },
-  "repository": "https://gitlab.com/bytesnz/reactdown.git",
+  "repository": "https://gitlab.com/bytesnz/twitchdown.git",
   "author": "Jack Farley <or4e3dsw@bytes.nz>",
   "license": "GPL-3.0",
   "devDependencies": {
