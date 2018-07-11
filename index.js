@@ -1,31 +1,32 @@
-const TAGS = {
-  '' : [null, 'em'],
-  _ : [null, 'strong'],
-  '~' : [null, 's'],
-  '\n' : ['br', null],
-  ' ' : ['br', null],
-  '-': ['hr', null]
-};
+"use strict";
 
-/** Outdent a string based on the first indented line's leading whitespace
- *  @private
- */
-function outdent(str) {
-  return str.replace(RegExp('^'+(str.match(/^(\t| )+/) || '')[0], 'gm'), '');
-}
-
-/** Encode special attribute characters to HTML entities in a String.
- *  @private
- */
-function encodeAttr(str) {
-  return (str+'').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-// export default function parse(md, referenceLinks) {
 /**
  * Turn Markdown into react-like objects
  */
 module.exports = function parse(md, options) {
+  var TAGS = {
+    '' : [null, 'em'],
+    _ : [null, 'strong'],
+    '~' : [null, 's'],
+    '\n' : ['br', null],
+    ' ' : ['br', null],
+    '-': ['hr', null]
+  };
+
+  /** Outdent a string based on the first indented line's leading whitespace
+   *  @private
+   */
+  function outdent(str) {
+    return str.replace(RegExp('^'+(str.match(/^(\t| )+/) || '')[0], 'gm'), '');
+  }
+
+  /** Encode special attribute characters to HTML entities in a String.
+   *  @private
+   */
+  function encodeAttr(str) {
+    return (str+'').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
   if (!options) {
     options = {};
   }
@@ -36,9 +37,15 @@ module.exports = function parse(md, options) {
     options.stripTags = [];
   }
 
-  let e;
+  var e;
   if (!options.createElement) {
-    e = (type, props, children) => ({ type, props, children });
+    e = function (type, props, children) {
+      return {
+        type: type,
+        props: props,
+        children: children
+      };
+    };
   } else {
     e = options.createElement;
   }
@@ -55,26 +62,26 @@ module.exports = function parse(md, options) {
   // (!17!  \n\n*|\n{2,}|__|\*\*|[_*]|~~)| - Formatters
   // (?:{@(!18!\w+)(!19!(?:\s+(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})| - Special MD Tag
   // (?:<\s*(!20!\/)(!21!\w+)(!22! [^>]+)?>) - HTML Tag
-  let tokenizer = /((?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|(?:^``` *(\w*)\n([\s\S]*?)\n```$)|((?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)|((?:(?:^|\n)([>*+-]|\d+\.)\s+.*)+)|(?:\!\[([^\]]*?)\]\(([^\)]+?)\))|(\[)|(\](?:\(([^\)]+?)\))?)|(?:(?:^|\n+)([^\s].*)\n(\-{3,}|={3,})(?:\n+|$))|(?:(?:^|\n+)(#{1,6})\s*(.+)(?:\n+|$))|(?:`([^`].*?)`)|(  \n\n*|\n{2,}|__|\*\*|[_*]|~~)|(?:{@(\w+)((?:\s+(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})|(?:<\s*(\/?)(\w+)( [^>]+)?>)/gm,
+  var tokenizer = /((?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|(?:^``` *(\w*)\n([\s\S]*?)\n```$)|((?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)|((?:(?:^|\n)([>*+-]|\d+\.)\s+.*)+)|(?:!\[([^\]]*?)\]\(([^)]+?)\))|(\[)|(\](?:\(([^)]+?)\))?)|(?:(?:^|\n+)([^\s].*)\n(-{3,}|={3,})(?:\n+|$))|(?:(?:^|\n+)(#{1,6})\s*(.+)(?:\n+|$))|(?:`([^`].*?)`)|( {2}\n\n*|\n{2,}|__|\*\*|[_*]|~~)|(?:{@(\w+)((?:\s+(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})|(?:<\s*(\/?)(\w+)( [^>]+)?>)/gm,
       context = [],
       out = [],
       links = options.referenceLinks || {},
       last = 0,
       tags = [],
-      chunk, prev, token, inner, t;
+      chunk, prev, token, t;
 
-  function tag(token) {
-    var desc = TAGS[token.replace(/\*/g,'_')[1] || ''];
+  function tag(tagToken) {
+    var desc = TAGS[tagToken.replace(/\*/g,'_')[1] || ''];
 
     if (desc[1] && tags.length && tags[tags.length - 1].tag === desc[1]
-        && tags[tags.length - 1].token === token) {
+        && tags[tags.length - 1].tagToken === tagToken) {
       if (prev) {
         out.push(prev);
         prev = '';
       }
-      const tag = tags.pop();
-      tag.out.push(e(tag.tag, null, out));
-      out = tag.out;
+      var currentTag = tags.pop();
+      currentTag.out.push(e(currentTag.tag, null, out));
+      out = currentTag.out;
     } else {
       if (prev) {
         out.push(clean(prev));
@@ -86,8 +93,8 @@ module.exports = function parse(md, options) {
           flushTo('p');
           tags.push({
             tag: 'p',
-            token,
-            out
+            tagToken: tagToken,
+            out: out
           });
           out = [];
         } else {
@@ -98,8 +105,8 @@ module.exports = function parse(md, options) {
       if (desc[1]) {
         tags.push({
           tag: desc[1],
-          token,
-          out
+          tagToken: tagToken,
+          out: out
         });
         out = [];
       }
@@ -107,21 +114,21 @@ module.exports = function parse(md, options) {
   }
 
   function flush() {
-    let str = '';
+    var str = '';
     while (context.length) str += tag(context[context.length-1]);
     return str;
   }
 
-  function flushTo(tag, justAbove) {
+  function flushTo(tagType, justAbove) {
     var target = 0;
 
     if (!tags.length) {
       return;
     }
 
-    if (tag) {
+    if (tagType) {
       for (target = tags.length - 1; target >= 0; target--) {
-        if (tags[target].tag === tag) {
+        if (tags[target].tag === tagType) {
           break;
         }
       }
@@ -177,7 +184,7 @@ module.exports = function parse(md, options) {
       if (options.paragraphs && !tags.length) {
         tags.push({
           tag: 'p',
-          out
+          out: out
         });
         out = [];
       }
@@ -186,7 +193,7 @@ module.exports = function parse(md, options) {
     }
   }
 
-  md = md.replace(/^\[(.+?)\]:\s*(.+)$/gm, (s, name, url) => {
+  md = md.replace(/^\[(.+?)\]:\s*(.+)$/gm, function (s, name, url) {
     links[name.toLowerCase()] = url;
     return '';
   }).replace(/^\n+|\n+$/g, '');
@@ -231,17 +238,17 @@ module.exports = function parse(md, options) {
         addPrev();
         flushTo('p');
       }
-      const parseOptions = Object.assign({}, options, { referenceLinks: links, paragraphs: false });
+      var parseOptions = Object.assign({}, options, { referenceLinks: links, paragraphs: false });
       if (t === '>') {
         chunk = e('blockquote', null, parse(outdent(token[5].replace(/^>\s*/gm, '')),
             parseOptions));
       } else {
         t = t.match(/^\d+\./) ? 'ol' : 'ul';
-        // const listSplitter = /^(.*)(\n|$)/gm;
-        const listSplitter = /^[*+-.]\s(.*)/gm;
-        const items = [];
-        let item;
-        while (item = listSplitter.exec(token[5])) {
+        // var listSplitter = /^(.*)(\n|$)/gm;
+        var listSplitter = /^[*+-.]\s(.*)/gm;
+        var items = [];
+        var item;
+        while ((item = listSplitter.exec(token[5]))) {
           items.push(e('li', null, parse(item[1], parseOptions)));
         }
         chunk = e(t, null, items);
@@ -253,7 +260,7 @@ module.exports = function parse(md, options) {
       if (options.paragraphs && !tags.length) {
         tags.push({
           tag: 'p',
-          out
+          out: out
         });
         out = [];
       }
@@ -278,7 +285,7 @@ module.exports = function parse(md, options) {
       if (options.paragraphs && !tags.length) {
         tags.push({
           tag: 'p',
-          out
+          out: out
         });
         out = [];
       }
@@ -286,7 +293,7 @@ module.exports = function parse(md, options) {
       tags.push({
         index: token.index,
         tag: 'a',
-        out
+        out: out
       });
       out = [];
       chunk = '';
@@ -313,7 +320,7 @@ module.exports = function parse(md, options) {
     // Tags:
     else if (token[18]) {
       if (options.customTags && options.customTags[token[18]]) {
-        let tagTokenizer = /\s+(?:"((?:\\"|[^"])*)"|([^"\s}]+))/g,
+        var tagTokenizer = /\s+(?:"((?:\\"|[^"])*)"|([^"\s}]+))/g,
             parameters = [],
             parameter;
         while ( (parameter = tagTokenizer.exec(token[19])) ) {
@@ -343,7 +350,7 @@ module.exports = function parse(md, options) {
           index: token.index,
           tag: token[21],
           attributes: token[22],
-          out
+          out: out
         });
         out = [];
 
