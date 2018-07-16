@@ -41,9 +41,11 @@ module.exports = function parse(md, options) {
       out = currentTag.out;
     } else {
       if (desc[0]) {
+        if (options.paragraphs) {
+          flushTo('p');
+        }
         if (options.paragraphs && desc[0] === 'br' && (!tags.length || tags[tags.length - 1].tag === 'p')) {
           // Create a new paragraph
-          flushTo('p');
         } else {
           out.push(e(desc[0]));
         }

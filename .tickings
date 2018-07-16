@@ -43,3 +43,5 @@
 2018-07-16T17:12:57.857Z	git:master	0:09:37
 2018-07-16T17:41:11.315Z	git:master	Change so custom tags aren't wrapped
 2018-07-16T17:41:12.496Z	git:master	0:03:20
+2018-07-16T17:44:02.928Z	git:master	Fix so hrs are wrapped in p
+2018-07-16T17:53:13.598Z	git:master	0:09:24

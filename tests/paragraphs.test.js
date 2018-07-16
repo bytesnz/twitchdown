@@ -15,7 +15,7 @@ test('doesnt wrap headings, code blocks, lists and custom tags in paragraphs', (
     { type: 'p', props: null, children: [ 'bye' ] }
   ], twitchdown('#heading\nhello\n you\n##subheading\nbye', {
     paragraphs: true
-  }));
+  }), 'headings');
 
   t.deepEqual([
     { type: 'p', props: null, children: [ 'hello' ] },
@@ -23,7 +23,15 @@ test('doesnt wrap headings, code blocks, lists and custom tags in paragraphs', (
     { type: 'p', props: null, children: [ 'bye' ] }
   ], twitchdown('hello\n> quote\nbye', {
     paragraphs: true
-  }));
+  }), 'blockquotes');
+
+  t.deepEqual([
+    { type: 'p', props: null, children: [ 'hello' ] },
+    { type: 'hr', props: undefined, children: undefined },
+    { type: 'p', props: null, children: [ 'bye' ] }
+  ], twitchdown('hello\n* * *\nbye', {
+    paragraphs: true
+  }), 'horizontal rules');
 
   t.deepEqual([
     { type: 'p', props: null, children: [ 'hello' ] },
@@ -33,7 +41,7 @@ test('doesnt wrap headings, code blocks, lists and custom tags in paragraphs', (
     { type: 'p', props: null, children: [ 'bye' ] }
   ], twitchdown('hello \n- item\nbye', {
     paragraphs: true
-  }));
+  }), 'lists');
 
   t.deepEqual([
     { type: 'p', props: null, children: [ 'hello' ] },
@@ -41,22 +49,7 @@ test('doesnt wrap headings, code blocks, lists and custom tags in paragraphs', (
     { type: 'p', props: null, children: [ 'bye' ] }
   ], twitchdown('hello\n```\nsomething\n```\nbye', {
     paragraphs: true
-  }));
-
-  t.deepEqual([
-    { type: 'p', props: null, children: [ 'hello' ] },
-    { type: 'pre', props: { className: 'code diff' }, children: [ 'something' ] }
-  ], twitchdown('hello\n```diff\nsomething\n```', {
-    paragraphs: true
-  }));
-
-  t.deepEqual([
-    { type: 'p', props: null, children: [ 'hello' ] },
-    'Highlighted diff: \'something\''
-  ], twitchdown('hello\n\n```diff\nsomething\n```', {
-    paragraphs: true,
-    highlight: (content, language) => `Highlighted ${language}: '${content}'`
-  }));
+  }), 'code blocks');
 
   t.deepEqual([
     { type: 'p', props: null, children: [ 'hello' ] },
@@ -66,7 +59,7 @@ test('doesnt wrap headings, code blocks, lists and custom tags in paragraphs', (
     customTags: {
       custom: (content, language) => `Custom tag`
     }
-  }));
+  }), 'custom tags');
 });
 
 test('Puts links, images and single quote code in paragraphs', (t) => {
