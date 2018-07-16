@@ -11,21 +11,33 @@ work
 ## Features
 - Still fast
 - Still small
-- Pass a Markdown string, get an array of react components
+- Still simply - pass a Markdown string, get an array of components (created with the given `createElement` function)
 - Use custom `{@ }` tags and handlers
 - Add `<p>` tags around text
 - Integrate with code highlighters like
   [react-syntax-highlighter](https://github.com/conorhastings/react-syntax-highlighter)
 
 ## Example
-```javascript
+For a more "real life" example with lazy loading, see the
+[Markdown](https://bytes.nz/8jf749h) component of [MARSS](https://gitlab.com/bytesnz/marss)
+````javascript
 import twitchdown from 'twitchdown';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { docco } from 'react-syntax-highligher/styles/hljs';
 
 const customTag = (attributes) => {
   return `First is '${attributes[0]}', the rest is '${attributes.splice(1).join(',')}`
 };
+
+const highlighter = (code, language) => {
+  return React.createElement(SyntaxHighlighter, {
+    showLineNumbers: true
+    style: defaultStyle,
+    language
+  }, [ code ]);
+}
 
 const markdown = `#Test
 
@@ -34,6 +46,12 @@ const markdown = `#Test
 This is some <em>test</em> markdown
 - good [me](me)
 - one {@custom first second "third"}
+
+\`\`\`javascript
+function hello() {
+  console.debug('hello');
+}
+\`\`\`
 `;
 
 ReactDOM.render(document.getElementById('app'), twitchdown(markdown, {
@@ -52,4 +70,4 @@ ReactDOM.render(document.getElementById('app'), twitchdown(markdown, {
     me: 'https://me.com/'
   }
 }));
-```
+````
