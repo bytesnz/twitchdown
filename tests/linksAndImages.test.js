@@ -1,5 +1,5 @@
 import test from 'ava';
-import twitchdown from '../';
+import twitchdown from '../index';
 
 test('parses links', (t) => {
   t.deepEqual([ { type: 'a', props: { href: 'http://github.com/developit/twitchdown' }, children: [ 'Snarkdown' ] } ], twitchdown('[Snarkdown](http://github.com/developit/twitchdown)'));

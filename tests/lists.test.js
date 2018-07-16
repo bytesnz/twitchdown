@@ -1,5 +1,5 @@
 import test from 'ava';
-import twitchdown from '../';
+import twitchdown from '../index';
 
 test('parses an unordered list with *', (t) => {
   t.deepEqual([ { type: 'ul', props: null, children: [

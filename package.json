@@ -8,7 +8,7 @@
     "highlight",
     "simple"
   ],
-  "main": "index.js",
+  "main": "index.min.js",
   "scripts": {
     "test": "eslint index.js && ava -v",
     "lint": "eslint index.js",

@@ -1,5 +1,5 @@
 import test from 'ava';
-import twitchdown from '../';
+import twitchdown from '../index';
 
 const options = {
   customTags: {

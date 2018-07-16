@@ -1,5 +1,5 @@
 import test from 'ava';
-import twitchdown from '../';
+import twitchdown from '../index';
 
 test('parses H1 titles', (t) => {
   t.deepEqual([ { type: 'h1', props: null, children: [ 'I like tiny libraries' ] } ], twitchdown('# I like tiny libraries'));

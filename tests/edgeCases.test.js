@@ -1,5 +1,5 @@
 import test from 'ava';
-import twitchdown from '../';
+import twitchdown from '../index';
 
 test.only('should close unclosed tags', (t) => {
   t.deepEqual([ { type: 'em', props: null, children: [ 'foo' ] } ], twitchdown('*foo'));

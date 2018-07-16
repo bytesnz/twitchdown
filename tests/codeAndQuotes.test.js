@@ -1,5 +1,5 @@
 import test from 'ava';
-import twitchdown from '../';
+import twitchdown from '../index';
 
 test('parses inline code', (t) => {
   t.deepEqual(['Here is some code ', { type: 'code', props: null, children: ['var a = 1'] }, '.'], twitchdown('Here is some code `var a = 1`.'));

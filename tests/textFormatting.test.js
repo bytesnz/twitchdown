@@ -1,5 +1,5 @@
 import test from 'ava';
-import twitchdown from '../';
+import twitchdown from '../index';
 
 test('parses bold with **', (t) => {
   t.deepEqual([ 'I ', { type: 'strong', props: null, children: [ 'like' ] }, ' tiny libraries' ], twitchdown('I **like** tiny libraries'));
