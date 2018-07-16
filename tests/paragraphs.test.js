@@ -7,7 +7,7 @@ test('wraps text in a paragraph if enabled', (t) => {
   }));
 });
 
-test('doesnt wrap headings, code blocks and lists in paragraphs', (t) => {
+test('doesnt wrap headings, code blocks, lists and custom tags in paragraphs', (t) => {
   t.deepEqual([
     { type: 'h1', props: null, children: [ 'heading' ] },
     { type: 'p', props: null, children: [ 'hello you' ] },
@@ -56,6 +56,16 @@ test('doesnt wrap headings, code blocks and lists in paragraphs', (t) => {
   ], twitchdown('hello\n\n```diff\nsomething\n```', {
     paragraphs: true,
     highlight: (content, language) => `Highlighted ${language}: '${content}'`
+  }));
+
+  t.deepEqual([
+    { type: 'p', props: null, children: [ 'hello' ] },
+    'Custom tag'
+  ], twitchdown('hello\n{@custom}', {
+    paragraphs: true,
+    customTags: {
+      custom: (content, language) => `Custom tag`
+    }
   }));
 });
 

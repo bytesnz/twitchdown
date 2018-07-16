@@ -345,6 +345,10 @@ module.exports = function parse(md, options) {
     }
     // Tags:
     else if (token[18]) {
+      addPrev(true);
+      if (options.paragraphs) {
+        flushTo('p');
+      }
       if (options.customTags && options.customTags[token[18]]) {
         var tagTokenizer = /\s+(?:"((?:\\"|[^"])*)"|([^"\s}]+))/g,
             parameters = [],
