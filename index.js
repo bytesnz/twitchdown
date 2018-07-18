@@ -216,10 +216,17 @@ module.exports = function parse(md, options) {
       last = 0,
       tags = [],
       lastIsBlock = false,
-      chunk, prev, token, t;
+      chunk, prev, token, t,
+      customTagerizer = /{@(\w+)((?:\s+(?:"(?:\\"|[^"])*"|[^"\s}]*))*)}/;
 
   md = md.replace(/^\[(.+?)\]:\s*(.+)$/gm, function (s, name, url) {
-    links[name.toLowerCase()] = url;
+    links[name.toLowerCase()] = url.replace(customTagerizer, function(u, customTag, attributes) {
+      if (options.customTags && options.customTags[customTag]) {
+        return options.customTags[customTag](attributes.trim());
+      } else {
+        return '';
+      }
+    });
     return '';
   }).replace(/^\n+|\n+$/g, '');
 
@@ -295,6 +302,13 @@ module.exports = function parse(md, options) {
         });
         out = [];
       }
+      token[8] = token[8].replace(customTagerizer, function(s, customTag, attributes) {
+        if (options.customTags && options.customTags[customTag]) {
+          return options.customTags[customTag](attributes.trim());
+        } else {
+          return '';
+        }
+      });
       chunk = e('img', {
         src: encodeAttr(token[8]),
         alt: encodeAttr(token[7])
@@ -304,6 +318,15 @@ module.exports = function parse(md, options) {
     else if (token[10]) {
       flushTo('a', true);
       if (tags.length) {
+        if (token[11]) {
+          token[11] = token[11].replace(customTagerizer, function(s, customTag, attributes) {
+            if (options.customTags && options.customTags[customTag]) {
+              return options.customTags[customTag](attributes.trim());
+            } else {
+              return '';
+            }
+          });
+        }
         tags[tags.length - 1].attributes = {
           href: encodeAttr(token[11] || links[prev.toLowerCase().trim()])
         };
