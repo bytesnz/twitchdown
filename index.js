@@ -166,6 +166,17 @@ module.exports = function parse(md, options) {
     }
   }
 
+  function iderize (text) {
+    return text
+        .replace(/(?:!\[[^\]]*?\]\([^)]+?)\)/, '')
+        .replace(/\[(.*)\](?:\([^)]+?\))?/g, '$1')
+        .toLowerCase()
+        .replace(/[^\s-_a-z0-9]/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/-{2,}/g, '-');
+  }
+
 
 
   if (!options) {
@@ -358,7 +369,11 @@ module.exports = function parse(md, options) {
         addPrev(true);
         flushTo('p');
       }
-      chunk = e(t, null, parse(token[12] || token[15],
+      chunk = e(t,
+        options.headingIds ? {
+          id: iderize(token[12] || token[15])
+        } : null,
+        parse(token[12] || token[15],
         Object.assign({}, options, { referenceLinks: links, paragraphs: false })));
       lastIsBlock = true;
     }
