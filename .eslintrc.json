@@ -12,5 +12,20 @@
     "no-unused-expressions": 2,
     "no-shadow": 2,
     "no-trailing-spaces": 2
-  }
+  },
+  "overrides": [
+    {
+      "files": [ "example.js" ],
+      "parserOptions": {
+        "ecmaVersion": 6
+      }
+    },
+    {
+      "files": [ "tests/*.test.js" ],
+      "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module"
+      }
+    }
+  ]
 }

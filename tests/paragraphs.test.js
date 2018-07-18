@@ -65,7 +65,7 @@ test('doesn\'t wrap headings, code blocks, lists, custom tags and html tags (if 
   ], twitchdown('hello\n{@custom}', {
     paragraphs: true,
     customTags: {
-      custom: (content, language) => `Custom tag`
+      custom: () => `Custom tag`
     }
   }), 'custom tags');
 
