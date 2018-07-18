@@ -2,7 +2,7 @@ import test from 'ava';
 import twitchdown from '../index';
 
 test('parses links', (t) => {
-  t.deepEqual([ { type: 'a', props: { href: 'http://github.com/developit/twitchdown' }, children: [ 'Snarkdown' ] } ], twitchdown('[Snarkdown](http://github.com/developit/twitchdown)'));
+  t.deepEqual([ { type: 'a', props: { href: 'http://world.com' }, children: [ 'World' ] } ], twitchdown('[World](http://world.com)'));
 });
 
 test('parses anchor links', (t) => {

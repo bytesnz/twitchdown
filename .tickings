@@ -45,3 +45,9 @@
 2018-07-16T17:41:12.496Z	git:master	0:03:20
 2018-07-16T17:44:02.928Z	git:master	Fix so hrs are wrapped in p
 2018-07-16T17:53:13.598Z	git:master	0:09:24
+2018-07-17T07:13:52.900Z	git:master	Ensuring everything is correctly blocked / not blocked
+2018-07-17T07:14:26.824Z	git:master	Make sure spaces at start of strings are not removed unless after block
+2018-07-17T17:10:04.520Z	git:master	0:56:12
+2018-07-17T19:12:32.681Z	git:master	0:39:46
+2018-07-18T06:56:59.368Z	git:master	customTags inside urls
+2018-07-18T14:55:22.975Z	git:master	0:20:21

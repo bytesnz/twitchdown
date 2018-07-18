@@ -134,11 +134,16 @@ module.exports = function parse(md, options) {
    * @returns string The cleaned string
    */
   function clean(string, trimPrev) {
-    var cleaned = string.replace(/^\n/, '').replace('\n', ' ').replace(/\s+/, ' ');
+    var cleaned = string.replace('\n', ' ').replace(/\s+/, ' ');
 
-    if (trimPrev) {
+    if (lastIsBlock && trimPrev) {
+      cleaned = cleaned.trim();
+    } else if (trimPrev) {
       cleaned = cleaned.replace(/[\s\uFEFF\xA0]+$/g, '');
+    } else if (lastIsBlock) {
+      cleaned = cleaned.replace(/^[\s\uFEFF\xA0]+/g, '');
     }
+    lastIsBlock = false;
 
     return cleaned;
   }
@@ -210,6 +215,7 @@ module.exports = function parse(md, options) {
       links = options.referenceLinks || {},
       last = 0,
       tags = [],
+      lastIsBlock = false,
       chunk, prev, token, t;
 
   md = md.replace(/^\[(.+?)\]:\s*(.+)$/gm, function (s, name, url) {
@@ -237,6 +243,7 @@ module.exports = function parse(md, options) {
         chunk = e('pre', {
           className: 'code' + (token[2] && ' ' + token[2].toLowerCase())
         }, [ outdent(encodeAttr(token[3]).replace(/^\n+|\n+$/g, '')) ]);
+        lastIsBlock = true;
       }
     }
     // Quote (Indent) blocks:
@@ -248,6 +255,7 @@ module.exports = function parse(md, options) {
       chunk = e('pre', {
         className: 'code poetry'
       }, [ outdent(encodeAttr(token[4]).replace(/^\n+|\n+$/g, '')) ]);
+      lastIsBlock = true;
     }
     // > Quotes, -* lists:
     else if (token[6]) {
@@ -263,6 +271,7 @@ module.exports = function parse(md, options) {
       if (t === '>') {
         chunk = e('blockquote', null, parse(outdent(token[5].replace(/^>\s*/gm, '')),
             parseOptions));
+        lastIsBlock = true;
       } else {
         t = t.match(/^\d+\./) ? 'ol' : 'ul';
         // var listSplitter = /^(.*)(\n|$)/gm;
@@ -273,6 +282,7 @@ module.exports = function parse(md, options) {
           items.push(e('li', null, parse(item[1], parseOptions)));
         }
         chunk = e(t, null, items);
+        lastIsBlock = true;
       }
     }
     // Images:
@@ -327,6 +337,7 @@ module.exports = function parse(md, options) {
       }
       chunk = e(t, null, parse(token[12] || token[15],
         Object.assign({}, options, { referenceLinks: links, paragraphs: false })));
+      lastIsBlock = true;
     }
     // `code`:
     else if (token[16]) {
@@ -363,6 +374,7 @@ module.exports = function parse(md, options) {
         } else {
           chunk = options.customTags[token[18]]();
         }
+        lastIsBlock = true;
       } else {
         chunk = null;
       }
