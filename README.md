@@ -57,10 +57,12 @@ function hello() {
 ReactDOM.render(document.getElementById('app'), twitchdown(markdown, {
   // createElement function
   createElement: React.createElement,
+  // Highlighter function for code blocks
+  highlighter: highlighter,
   // These HTML tags and their contents will be completely removed (defaults to <script> tags)
   removeTags: [ 'script' ],
   // These HTML tags will be removed, but their contents will be kept
-  stripTags: [ 'em' ]
+  stripTags: [ 'em' ],
   // Custom tag handlers
   customTags: {
     custom: customTag
@@ -68,6 +70,10 @@ ReactDOM.render(document.getElementById('app'), twitchdown(markdown, {
   // Reference links
   referenceLinks: {
     me: 'https://me.com/'
-  }
+  },
+  // Add id tags to any headings
+  headingIds: true,
+  // Wrap text in p tags
+  paragraphs: true
 }));
 ````
