@@ -19,9 +19,9 @@ test('parses H3 titles', (t) => {
 
 test('parses titles with reference links', (t) => {
   t.deepEqual([ { type: 'h1', props: null, children: [ 'I like ', {
-  type: 'a', props: { href: 'https://github.com/developit/twitchdown' }, children: [ 'tiny libraries' ]
+  type: 'a', props: { href: 'https://example.com' }, children: [ 'tiny libraries' ]
   } ] } ],
-    twitchdown('# I like [tiny libraries]\n\n[tiny libraries]: https://github.com/developit/twitchdown')
+    twitchdown('# I like [tiny libraries]\n\n[tiny libraries]: https://example.com')
   );
 });
 
@@ -45,8 +45,8 @@ test('adds id to heading tags if headingIds option given', (t) => {
   ] } ], twitchdown('# I `like` tiny libraries', { headingIds: true }), 'coded heading');
 
   t.deepEqual([ { type: 'h1', props: { id: 'i-like-tiny-libraries' }, children: [
-    { type: 'a', props: { href: 'http://world.com' }, children: [ 'I like tiny libraries' ] }
-  ] } ], twitchdown('# [I like tiny libraries](http://world.com)', { headingIds: true }), 'url heading');
+    { type: 'a', props: { href: 'http://example.com' }, children: [ 'I like tiny libraries' ] }
+  ] } ], twitchdown('# [I like tiny libraries](http://example.com)', { headingIds: true }), 'url heading');
 
   t.deepEqual([ { type: 'h1', props: { id: 'this-image' }, children: [
     'This image ',

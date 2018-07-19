@@ -69,7 +69,7 @@ ReactDOM.render(document.getElementById('app'), twitchdown(markdown, {
   },
   // Reference links
   referenceLinks: {
-    me: 'https://me.com/'
+    me: 'https://example.com/'
   },
   // Add id tags to any headings
   headingIds: true,

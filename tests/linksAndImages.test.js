@@ -2,7 +2,7 @@ import test from 'ava';
 import twitchdown from '../index';
 
 test('parses links', (t) => {
-  t.deepEqual([ { type: 'a', props: { href: 'http://world.com' }, children: [ 'World' ] } ], twitchdown('[World](http://world.com)'));
+  t.deepEqual([ { type: 'a', props: { href: 'http://example.com' }, children: [ 'World' ] } ], twitchdown('[World](http://example.com)'));
 });
 
 test('parses anchor links', (t) => {
@@ -26,14 +26,14 @@ test('parses images within links', (t) => {
 });
 
 test('parses reference links', (t) => {
-  t.deepEqual([ 'hello ', { type: 'a', props: { href: 'http://world.com' }, children: [ 'World' ] }, '!' ], twitchdown('\nhello [World]!\n[world]: http://world.com'));
+  t.deepEqual([ 'hello ', { type: 'a', props: { href: 'http://example.com' }, children: [ 'World' ] }, '!' ], twitchdown('\nhello [World]!\n[world]: http://example.com'));
 });
 
 test('use given reference links', (t) => {
-  t.deepEqual([ 'hello ', { type: 'a', props: { href: 'http://world.com' }, children: [ 'World' ] }, '!' ], twitchdown('\nhello [World]!', { referenceLinks: { world: 'http://world.com' } }));
+  t.deepEqual([ 'hello ', { type: 'a', props: { href: 'http://example.com' }, children: [ 'World' ] }, '!' ], twitchdown('\nhello [World]!', { referenceLinks: { world: 'http://example.com' } }));
 });
 
 test('parses reference links without creating excessive linebreaks', (t) => {
-  t.deepEqual([ 'hello ', { type: 'a', props: { href: 'http://world.com' }, children: [ 'World' ] }, '!' ], twitchdown('\nhello [World]!\n\n[world]: http://world.com'));
+  t.deepEqual([ 'hello ', { type: 'a', props: { href: 'http://example.com' }, children: [ 'World' ] }, '!' ], twitchdown('\nhello [World]!\n\n[world]: http://example.com'));
 });
 
