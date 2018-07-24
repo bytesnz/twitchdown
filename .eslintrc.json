@@ -15,7 +15,7 @@
   },
   "overrides": [
     {
-      "files": [ "example.js" ],
+      "files": [ "example.js", "util/mkReadme.js" ],
       "parserOptions": {
         "ecmaVersion": 6
       }
