@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.2.0] - 2018-07-24
+### Added
+- Added `title` attribute to images
+
+### Changed
+- Fix so attributes are passed to custom tag function as an array for
+  custom tags inside of urls for links and images as they are for tags outside
+  of urls
+
+### Removed
+- Empty `alt` attributes from images with no title
+
 ## [1.1.0] - 2018-07-16
 ### Added
 - Allow custom tags in image and link urls
