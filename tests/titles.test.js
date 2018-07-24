@@ -50,6 +50,6 @@ test('adds id to heading tags if headingIds option given', (t) => {
 
   t.deepEqual([ { type: 'h1', props: { id: 'this-image' }, children: [
     'This image ',
-    { type: 'img', props: { src: 'image.png', alt: 'description' }, children: undefined }
+    { type: 'img', props: { src: 'image.png', alt: 'description', title: 'description' }, children: undefined }
   ] } ], twitchdown('# This image ![description](image.png)', { headingIds: true }), 'image heading');
 });

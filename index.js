@@ -332,10 +332,19 @@ module.exports = function parse(md, options) {
           return '';
         }
       });
-      chunk = e('img', {
-        src: encodeAttr(token[8]),
-        alt: encodeAttr(token[7])
-      });
+      var props;
+      if (token[7]) {
+        props = {
+          src: encodeAttr(token[8]),
+          alt: encodeAttr(token[7]),
+          title: encodeAttr(token[7])
+        }
+      } else {
+        props = {
+          src: encodeAttr(token[8])
+        }
+      }
+      chunk = e('img', props);
     }
     // Links:
     else if (token[10]) {

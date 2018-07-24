@@ -58,3 +58,5 @@
 2018-07-18T20:45:28.781Z	git:master	0:10:20
 2018-07-24T17:02:11.746Z	git:master	Fix custom tags not being given array of attributes in image urls and links
 2018-07-24T17:14:08.625Z	git:master	0:12:32
+2018-07-24T17:18:49.222Z	git:master	Make alt text title of image as well
+2018-07-24T17:31:03.655Z	git:master	0:12:32

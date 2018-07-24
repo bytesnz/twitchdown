@@ -111,7 +111,7 @@ test('Puts links, images, inline formatting, html tags (if inline) and single qu
   t.deepEqual([
     { type: 'p', props: null, children: [
       'test ',
-      { type: 'img', props: { src: 'image.png', alt: 'image' }, children: undefined },
+      { type: 'img', props: { src: 'image.png', alt: 'image', title: 'image' }, children: undefined },
       ' again'
     ] }
   ], twitchdown('test ![image](image.png) again', {
@@ -120,7 +120,7 @@ test('Puts links, images, inline formatting, html tags (if inline) and single qu
 
   t.deepEqual([
     { type: 'p', props: null, children: [
-      { type: 'img', props: { src: 'image.png', alt: 'image' }, children: undefined },
+      { type: 'img', props: { src: 'image.png', alt: 'image', title: 'image' }, children: undefined },
       ' woot'
     ] }
   ], twitchdown('![image](image.png) woot', {
