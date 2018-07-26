@@ -1,6 +1,8 @@
 twitchdown
 =============
 
+[![pipeline status](https://gitlab.com/bytesnz/twitchdown/badges/master/pipeline.svg)](https://gitlab.com/bytesnz/twitchdown/commits/master)
+
 Dead simple Markdown parser for react-like libraries
 
 ## Kudos
@@ -27,8 +29,14 @@ import ReactDOM from 'react-dom';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highligher/styles/hljs';
 
+// Valid if options.parseArguments is falsey
 const customTag = (attributes) => {
   return `First is '${attributes[0]}', the rest is '${attributes.splice(1).join(',')}`
+};
+
+// Valid if options.parseArguments is truthy
+const superTag = (attributes) => {
+  return `You are super '${attributes.name}' because ${attributes.arguments.join(',')}`
 };
 
 const highlighter = (code, language) => {
@@ -65,8 +73,13 @@ ReactDOM.render(document.getElementById('app'), twitchdown(markdown, {
   stripTags: [ 'em' ],
   // Custom tag handlers
   customTags: {
-    custom: customTag
+    custom: customTag,
+    super: superTag
   },
+  // Whether or not to parse attributes passed to custom tags. Note that when
+  // enabled ALL custom tag arguments will be parsed into an object, rather
+  // than left as an array
+  parseArguments: true,
   // Reference links
   referenceLinks: {
     me: 'https://example.com/'

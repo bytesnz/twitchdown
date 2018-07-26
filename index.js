@@ -178,14 +178,28 @@ module.exports = function parse(md, options) {
   }
 
   function splitAttributes (attributes) {
-    var attributeTokenizer = /\s+(?:"((?:\\"|[^"])*)"|([^"\s}]+))/g,
-        split = [],
-        attribute;
+    var attributeTokenizer = /\s+((?:([-_a-zA-Z0-9]+)=)?(?:"((?:\\"|[^"])*)"|([^"\s}]+)))/g,
+        split = options.parseArguments ? { arguments: [] } : [],
+        attribute,
+        value;
     while ( (attribute = attributeTokenizer.exec(attributes)) ) {
-      split.push((attribute[1] && attribute[1].replace(/\\"/g, '"')) || attribute[2]);
+      if (options.parseArguments) {
+        value = (attribute[3] && attribute[3].replace(/\\"/g, '"')) || attribute[4];
+        if (attribute[2]) {
+          split[attribute[2]] = value;
+        } else {
+          split.arguments.push(value);
+        }
+      } else {
+        if (attribute[2]) {
+          split.push(attribute[1]);
+        } else {
+          split.push((attribute[3] && attribute[3].replace(/\\"/g, '"')) || attribute[4]);
+        }
+      }
     }
 
-    if (split.length) {
+    if (options.parseArguments || split.length) {
       return split;
     }
   }
@@ -230,10 +244,10 @@ module.exports = function parse(md, options) {
    * (?:(?:^|\n+)(!14!#{1,6})\s*(!15!.+)(?:\n+|$))|  - Headings
    * (?:`(!16![^`].*?)`)|  - Inline code
    * (!17!  \n\n*|\n{2,}|__|\*\*|[_*]|~~)| - Formatters
-   * (?:{@(!18!\w+)(!19!(?:\s+(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})| - Special {@ } MD Tag
+   * (?:{@(!18!\w+)(!19!(?:\s+(?:[-_a-zA-Z0-9]+=)?(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})| - Special {@ } MD Tag
    * (?:<\s*(!20!\/)(!21!\w+)(!22! [^>]+)?>) - HTML Tag
    */
-  var tokenizer = /((?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|(?:^``` *(\w*)\n([\s\S]*?)\n```$)|((?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)|((?:(?:^|\n)([>*+-]|\d+\.)\s+.*)+)|(?:!\[([^\]]*?)\]\(([^)]+?)\))|(\[)|(\](?:\(([^)]+?)\))?)|(?:(?:^|\n+)([^\s].*)\n(-{3,}|={3,})(?:\n+|$))|(?:(?:^|\n+)(#{1,6})\s*(.+)(?:\n+|$))|(?:`([^`].*?)`)|( {2}\n\n*|\n{2,}|__|\*\*|[_*]|~~)|(?:{@(\w+)((?:\s+(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})|(?:<\s*(\/?)(\w+)( [^>]+)?>)/gm,
+  var tokenizer = /((?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|(?:^``` *(\w*)\n([\s\S]*?)\n```$)|((?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)|((?:(?:^|\n)([>*+-]|\d+\.)\s+.*)+)|(?:!\[([^\]]*?)\]\(([^)]+?)\))|(\[)|(\](?:\(([^)]+?)\))?)|(?:(?:^|\n+)([^\s].*)\n(-{3,}|={3,})(?:\n+|$))|(?:(?:^|\n+)(#{1,6})\s*(.+)(?:\n+|$))|(?:`([^`].*?)`)|( {2}\n\n*|\n{2,}|__|\*\*|[_*]|~~)|(?:{@(\w+)((?:\s+(?:[-_a-zA-Z0-9]+=)?(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})|(?:<\s*(\/?)(\w+)( [^>]+)?>)/gm,
       out = [],
       links = options.referenceLinks || {},
       last = 0,

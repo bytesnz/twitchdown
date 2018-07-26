@@ -34,3 +34,16 @@ test('parses custom tag inside of image urls and links', (t) => {
     { type: 'img', props: { src: 'CUSTOM(id,again)' }, children: undefined }
   ] } ], twitchdown('[![]({@test id "again"})]({@test link "again"})', options), 'image inside link');
 });
+
+test('parses attributes in an object if given parseArguments option', (t) => {
+  t.deepEqual([ {
+    arguments: [ 'one', 'double=two' ],
+    test: 'string',
+    another: 'quoted string'
+  } ], twitchdown('{@test one test=string "double=two" another="quoted string"}', {
+    customTags: {
+      test: (parameters) => parameters
+    },
+    parseArguments: true
+  }));
+});
