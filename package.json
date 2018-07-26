@@ -1,6 +1,6 @@
 {
   "name": "twitchdown",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Dead simple Markdown parser for react-like libraries",
   "keywords": [
     "react",
@@ -12,7 +12,8 @@
   "scripts": {
     "test": "npm outdated && eslint **/*.js && ava -v",
     "lint": "eslint **/*.js",
-    "squish": "uglifyjs index.js > index.min.js"
+    "squish": "uglifyjs index.js > index.min.js",
+    "readme": "util/mkReadme.js"
   },
   "repository": "https://gitlab.com/bytesnz/twitchdown.git",
   "author": "Jack Farley <or4e3dsw@bytes.nz>",

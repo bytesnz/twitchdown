@@ -3,4 +3,7 @@ test*
 yarn*
 .gitlab-ci.yml
 .tickings
-.eslintrc
+.eslintrc.json
+utils
+README.src.md
+CHANGELOG.md

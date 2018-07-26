@@ -177,6 +177,18 @@ module.exports = function parse(md, options) {
         .replace(/-{2,}/g, '-');
   }
 
+  function splitAttributes (attributes) {
+    var attributeTokenizer = /\s+(?:"((?:\\"|[^"])*)"|([^"\s}]+))/g,
+        split = [],
+        attribute;
+    while ( (attribute = attributeTokenizer.exec(attributes)) ) {
+      split.push((attribute[1] && attribute[1].replace(/\\"/g, '"')) || attribute[2]);
+    }
+
+    if (split.length) {
+      return split;
+    }
+  }
 
 
   if (!options) {
@@ -233,7 +245,7 @@ module.exports = function parse(md, options) {
   md = md.replace(/^\[(.+?)\]:\s*(.+)$/gm, function (s, name, url) {
     links[name.toLowerCase()] = url.replace(customTagerizer, function(u, customTag, attributes) {
       if (options.customTags && options.customTags[customTag]) {
-        return options.customTags[customTag](attributes.trim());
+        return options.customTags[customTag](splitAttributes(attributes));
       } else {
         return '';
       }
@@ -315,15 +327,24 @@ module.exports = function parse(md, options) {
       }
       token[8] = token[8].replace(customTagerizer, function(s, customTag, attributes) {
         if (options.customTags && options.customTags[customTag]) {
-          return options.customTags[customTag](attributes.trim());
+          return options.customTags[customTag](splitAttributes(attributes));
         } else {
           return '';
         }
       });
-      chunk = e('img', {
-        src: encodeAttr(token[8]),
-        alt: encodeAttr(token[7])
-      });
+      var props;
+      if (token[7]) {
+        props = {
+          src: encodeAttr(token[8]),
+          alt: encodeAttr(token[7]),
+          title: encodeAttr(token[7])
+        }
+      } else {
+        props = {
+          src: encodeAttr(token[8])
+        }
+      }
+      chunk = e('img', props);
     }
     // Links:
     else if (token[10]) {
@@ -332,7 +353,7 @@ module.exports = function parse(md, options) {
         if (token[11]) {
           token[11] = token[11].replace(customTagerizer, function(s, customTag, attributes) {
             if (options.customTags && options.customTags[customTag]) {
-              return options.customTags[customTag](attributes.trim());
+              return options.customTags[customTag](splitAttributes(attributes));
             } else {
               return '';
             }
@@ -401,17 +422,7 @@ module.exports = function parse(md, options) {
         flushTo('p');
       }
       if (options.customTags && options.customTags[token[18]]) {
-        var tagTokenizer = /\s+(?:"((?:\\"|[^"])*)"|([^"\s}]+))/g,
-            parameters = [],
-            parameter;
-        while ( (parameter = tagTokenizer.exec(token[19])) ) {
-          parameters.push((parameter[1] && parameter[1].replace(/\\"/g, '"')) || parameter[2]);
-        }
-        if (parameters.length) {
-          chunk = options.customTags[token[18]](parameters);
-        } else {
-          chunk = options.customTags[token[18]]();
-        }
+        chunk = options.customTags[token[18]](splitAttributes(token[19]));
         lastIsBlock = true;
       } else {
         chunk = null;
