@@ -23,30 +23,31 @@ work
 ## Example
 For a more "real life" example with lazy loading, see the
 [Markdown](https://bytes.nz/8jf749h) component of [MARSS](https://gitlab.com/bytesnz/marss)
-````javascript
-import twitchdown from 'twitchdown';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { docco } from 'react-syntax-highligher/styles/hljs';
+
+
+```javascript
+var twitchdown = require('twitchdown');
+// var React = require('react');
+// var SyntaxHighlighter = require('react-syntax-highlighter');
+// var docco = require('react-syntax-highligher/styles/hljs').docco;
 
 // Valid if options.parseArguments is falsey
-const customTag = (attributes) => {
+var customTag = (attributes) => {
   return `First is '${attributes[0]}', the rest is '${attributes.splice(1).join(',')}`
 };
 
 // Valid if options.parseArguments is truthy
-const superTag = (attributes) => {
+var superTag = (attributes) => {
   return `You are super '${attributes.name}' because ${attributes.arguments.join(',')}`
 };
 
-const highlighter = (code, language) => {
-  return React.createElement(SyntaxHighlighter, {
-    showLineNumbers: true
-    style: defaultStyle,
-    language
-  }, [ code ]);
-}
+// var highlighter = (code, language) => {
+//   return React.createElement(SyntaxHighlighter, {
+//     showLineNumbers: true,
+//     style: defaultStyle,
+//     language
+//   }, [ code ]);
+// }
 
 const markdown = `#Test
 
@@ -56,6 +57,8 @@ This is some <em>test</em> markdown
 - good [me](me)
 - one {@custom first second "third"}
 
+{@super name=bob twitch}
+
 \`\`\`javascript
 function hello() {
   console.debug('hello');
@@ -63,24 +66,31 @@ function hello() {
 \`\`\`
 `;
 
-ReactDOM.render(document.getElementById('app'), twitchdown(markdown, {
-  // createElement function
-  createElement: React.createElement,
+var elements = twitchdown(markdown, {
+  // Function to use for creating elements
+  // createElement: React.createElement,
   // Highlighter function for code blocks
-  highlighter: highlighter,
+  //highlighter: highlighter,
   // These HTML tags and their contents will be completely removed (defaults to <script> tags)
   removeTags: [ 'script' ],
   // These HTML tags will be removed, but their contents will be kept
   stripTags: [ 'em' ],
   // Custom tag handlers
   customTags: {
-    custom: customTag,
+    custom: {
+      handler: customTag,
+      // If true and `paragraphs` is true , this tag will be placed p tags
+      inParagraph: true,
+      parseArguments: false
+    },
     super: superTag
   },
   // Whether or not to parse attributes passed to custom tags. Note that when
   // enabled ALL custom tag arguments will be parsed into an object, rather
   // than left as an array
   parseArguments: true,
+  // If true and `paragraphs` is true , custom tags will be placed p tags
+  tagsInParagraph: false,
   // Reference links
   referenceLinks: {
     me: 'https://example.com/'
@@ -89,8 +99,11 @@ ReactDOM.render(document.getElementById('app'), twitchdown(markdown, {
   headingIds: true,
   // Wrap text in p tags
   paragraphs: true
-}));
-````
+});
+
+console.log(elements);
+
+```
 
 
 # Changelog
