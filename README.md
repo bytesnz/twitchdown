@@ -18,6 +18,7 @@ work
 - Add `<p>` tags around text
 - Integrate with code highlighters like
   [react-syntax-highlighter](https://github.com/conorhastings/react-syntax-highlighter)
+- Minified version included (`require('twitchdown/index.min')`)
 
 ## Example
 For a more "real life" example with lazy loading, see the

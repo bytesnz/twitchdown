@@ -8,9 +8,10 @@
     "highlight",
     "simple"
   ],
-  "main": "index.min.js",
+  "main": "index.js",
   "scripts": {
     "test": "npm outdated && eslint **/*.js && ava -v",
+    "dev:test": "eslint **/*.js && ava -v",
     "lint": "eslint **/*.js",
     "squish": "uglifyjs index.js > index.min.js",
     "readme": "util/mkReadme.js"
