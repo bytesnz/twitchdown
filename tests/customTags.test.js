@@ -47,3 +47,35 @@ test('parses attributes in an object if given parseArguments option', (t) => {
     parseArguments: true
   }));
 });
+
+test('allows customTag handlers as objects', (t) => {
+  t.deepEqual([ 'CUSTOM(value,value 2)' ], twitchdown('{@test value "value 2"}', {
+    customTags: {
+      test: {
+        handler: options.customTags.test
+      }
+    }
+  }));
+});
+
+test('puts tag in a paragraph if tagsInParagrah or inParagraph set', (t) => {
+  t.deepEqual([ 'CUSTOM(value,value 2)' ], twitchdown('{@test value "value 2"}', {
+    ...options,
+    tagsInParagraph: true
+  }), 'does not without paragraphs set');
+  t.deepEqual([ { type: 'p', props: null, children: [ 'CUSTOM(value,value 2)' ] } ], twitchdown('{@test value "value 2"}', {
+    ...options,
+    paragraphs: true,
+    tagsInParagraph: true
+  }), 'tagsInParagraph set');
+  t.deepEqual([ 'CUSTOM(value)', { type: 'p', props: null, children: [ 'CUSTOM(value,value 2)' ] } ], twitchdown('{@test value}{@again value "value 2"}', {
+    customTags: {
+      test: options.customTags.test,
+      again: {
+        handler: options.customTags.test,
+        inParagraph: true
+      }
+    },
+    paragraphs: true
+  }), 'tag inParagraph set');
+});

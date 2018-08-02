@@ -177,13 +177,16 @@ module.exports = function parse(md, options) {
         .replace(/-{2,}/g, '-');
   }
 
-  function splitAttributes (attributes) {
+  function splitAttributes (attributes, parseArguments) {
+    if (typeof parseArguments !== 'boolean' && !parseArguments) {
+      parseArguments = options.parseArguments;
+    }
     var attributeTokenizer = /\s+((?:([-_a-zA-Z0-9]+)=)?(?:"((?:\\"|[^"])*)"|([^"\s}]+)))/g,
-        split = options.parseArguments ? { arguments: [] } : [],
+        split = parseArguments ? { arguments: [] } : [],
         attribute,
         value;
     while ( (attribute = attributeTokenizer.exec(attributes)) ) {
-      if (options.parseArguments) {
+      if (parseArguments) {
         value = (attribute[3] && attribute[3].replace(/\\"/g, '"')) || attribute[4];
         if (attribute[2]) {
           split[attribute[2]] = value;
@@ -199,7 +202,7 @@ module.exports = function parse(md, options) {
       }
     }
 
-    if (options.parseArguments || split.length) {
+    if (parseArguments || split.length) {
       return split;
     }
   }
@@ -431,13 +434,33 @@ module.exports = function parse(md, options) {
     }
     // Tags:
     else if (token[18]) {
-      addPrev(true);
-      if (options.paragraphs) {
-        flushTo('p');
-      }
       if (options.customTags && options.customTags[token[18]]) {
-        chunk = options.customTags[token[18]](splitAttributes(token[19]));
-        lastIsBlock = true;
+        var inParagraph = (typeof options.customTags[token[18]] === 'object'
+            && options.customTags[token[18]].inParagraph) || options.tagsInParagraph;
+        addPrev(!inParagraph);
+        if (options.paragraphs) {
+          if (inParagraph) {
+            if (!tags.length) {
+              tags.push({
+                tag: 'p',
+                out: out
+              });
+              out = [];
+            }
+          } else {
+            flushTo('p');
+          }
+        }
+        if (typeof options.customTags[token[18]] === 'function') {
+          chunk = options.customTags[token[18]](splitAttributes(token[19]));
+        } else if (typeof options.customTags[token[18]].handler === 'function') {
+          chunk = options.customTags[token[18]].handler(splitAttributes(token[19],
+              options.customTags[token[18]].parseArguments));
+        } else {
+          chunk = null;
+        }
+
+        lastIsBlock = !inParagraph;
       } else {
         chunk = null;
       }
