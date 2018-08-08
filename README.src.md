@@ -2,6 +2,7 @@ twitchdown
 =============
 
 [![pipeline status](https://gitlab.com/bytesnz/twitchdown/badges/master/pipeline.svg)](https://gitlab.com/bytesnz/twitchdown/commits/master)
+[![npm](https://bytes.nz/b/twitchdown/npm)](https://gitlab.com/bytesnz/twitchdown)
 
 Dead simple Markdown parser for react-like libraries
 
