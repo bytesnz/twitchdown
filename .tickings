@@ -60,3 +60,9 @@
 2018-07-24T17:14:08.625Z	git:master	0:12:32
 2018-07-24T17:18:49.222Z	git:master	Make alt text title of image as well
 2018-07-24T17:31:03.655Z	git:master	0:12:32
+2018-07-26T18:13:36.678Z	git:parseArguments	0:20:12
+2018-07-26T19:17:51.900Z	git:parseArguments	0:51:05
+2018-08-02T06:42:52.534Z	git:parseArguments	CustomTag as object
+2018-08-02T06:43:10.932Z	git:parseArguments	Option for placing custom tags in paragraphs
+2018-08-02T19:56:09.529Z	git:parseArguments	0:20:18
+2018-08-02T19:56:37.664Z	git:parseArguments	Add parseArguments option to customTags object

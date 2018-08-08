@@ -18,13 +18,19 @@
       "files": [ "example.js", "util/mkReadme.js" ],
       "parserOptions": {
         "ecmaVersion": 6
+      },
+      "rules": {
+        "no-console": 0
       }
     },
     {
       "files": [ "tests/*.test.js" ],
       "parserOptions": {
-        "ecmaVersion": 6,
-        "sourceType": "module"
+        "ecmaVersion": 7,
+        "sourceType": "module",
+        "ecmaFeatures": {
+          "experimentalObjectRestSpread": true
+        }
       }
     }
   ]

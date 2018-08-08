@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.3.0] - 2018-08-08
+### Added
+- Add `parseArguments` option to parse custom tag attributes into an object
+- Add `tagsInParagraph` option to set if custom tags should be placed in
+  p tags
+- Allow customTags to be given as Objects with their own values for the
+  `parseArguments` and `tagsInParagraph` (as `inParagraph`)
+
+### Changed
+- Set main file as non-minified version
+
 ## [1.2.0] - 2018-07-24
 ### Added
 - Added `title` attribute to images

@@ -1,6 +1,9 @@
 twitchdown
 =============
 
+[![pipeline status](https://gitlab.com/bytesnz/twitchdown/badges/master/pipeline.svg)](https://gitlab.com/bytesnz/twitchdown/commits/master)
+[![npm](https://bytes.nz/b/twitchdown/npm)](https://gitlab.com/bytesnz/twitchdown)
+
 Dead simple Markdown parser for react-like libraries
 
 ## Kudos
@@ -16,28 +19,36 @@ work
 - Add `<p>` tags around text
 - Integrate with code highlighters like
   [react-syntax-highlighter](https://github.com/conorhastings/react-syntax-highlighter)
+- Minified version included (`require('twitchdown/index.min')`)
 
 ## Example
 For a more "real life" example with lazy loading, see the
 [Markdown](https://bytes.nz/8jf749h) component of [MARSS](https://gitlab.com/bytesnz/marss)
-````javascript
-import twitchdown from 'twitchdown';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { docco } from 'react-syntax-highligher/styles/hljs';
 
-const customTag = (attributes) => {
+
+```javascript
+var twitchdown = require('twitchdown');
+// var React = require('react');
+// var SyntaxHighlighter = require('react-syntax-highlighter');
+// var docco = require('react-syntax-highligher/styles/hljs').docco;
+
+// Valid if options.parseArguments is falsey
+var customTag = (attributes) => {
   return `First is '${attributes[0]}', the rest is '${attributes.splice(1).join(',')}`
 };
 
-const highlighter = (code, language) => {
-  return React.createElement(SyntaxHighlighter, {
-    showLineNumbers: true
-    style: defaultStyle,
-    language
-  }, [ code ]);
-}
+// Valid if options.parseArguments is truthy
+var superTag = (attributes) => {
+  return `You are super '${attributes.name}' because ${attributes.arguments.join(',')}`
+};
+
+// var highlighter = (code, language) => {
+//   return React.createElement(SyntaxHighlighter, {
+//     showLineNumbers: true,
+//     style: defaultStyle,
+//     language
+//   }, [ code ]);
+// }
 
 const markdown = `#Test
 
@@ -47,6 +58,8 @@ This is some <em>test</em> markdown
 - good [me](me)
 - one {@custom first second "third"}
 
+{@super name=bob twitch}
+
 \`\`\`javascript
 function hello() {
   console.debug('hello');
@@ -54,19 +67,32 @@ function hello() {
 \`\`\`
 `;
 
-ReactDOM.render(document.getElementById('app'), twitchdown(markdown, {
-  // createElement function
-  createElement: React.createElement,
+var elements = twitchdown(markdown, {
+  // Function to use for creating elements
+  // createElement: React.createElement,
   // Highlighter function for code blocks
-  highlighter: highlighter,
+  //highlighter: highlighter,
   // These HTML tags and their contents will be completely removed (defaults to <script> tags)
   removeTags: [ 'script' ],
   // These HTML tags will be removed, but their contents will be kept
   stripTags: [ 'em' ],
   // Custom tag handlers
   customTags: {
-    custom: customTag
+    custom: {
+      handler: customTag,
+      // If set, this will override the global `tagsInParagraph` option
+      inParagraph: true,
+      // If set, this will override the global `parseArguments` option
+      parseArguments: false
+    },
+    super: superTag
   },
+  // Whether or not to parse attributes passed to custom tags. Note that when
+  // enabled ALL custom tag arguments will be parsed into an object, rather
+  // than left as an array
+  parseArguments: true,
+  // If true and `paragraphs` is true , custom tags will be placed p tags
+  tagsInParagraph: false,
   // Reference links
   referenceLinks: {
     me: 'https://example.com/'
@@ -75,8 +101,11 @@ ReactDOM.render(document.getElementById('app'), twitchdown(markdown, {
   headingIds: true,
   // Wrap text in p tags
   paragraphs: true
-}));
-````
+});
+
+console.log(elements);
+
+```
 
 
 # Changelog
@@ -86,6 +115,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.3.0] - 2018-08-08
+### Added
+- Add `parseArguments` option to parse custom tag attributes into an object
+- Add `tagsInParagraph` option to set if custom tags should be placed in
+  p tags
+- Allow customTags to be given as Objects with their own values for the
+  `parseArguments` and `tagsInParagraph` (as `inParagraph`)
+
+### Changed
+- Set main file as non-minified version
 
 ## [1.2.0] - 2018-07-24
 ### Added

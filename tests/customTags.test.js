@@ -34,3 +34,80 @@ test('parses custom tag inside of image urls and links', (t) => {
     { type: 'img', props: { src: 'CUSTOM(id,again)' }, children: undefined }
   ] } ], twitchdown('[![]({@test id "again"})]({@test link "again"})', options), 'image inside link');
 });
+
+test('parses attributes in an object if given parseArguments option', (t) => {
+  t.deepEqual([ {
+    arguments: [ 'one', 'double=two' ],
+    test: 'string',
+    another: 'quoted string'
+  } ], twitchdown('{@test one test=string "double=two" another="quoted string"}', {
+    customTags: {
+      test: (parameters) => parameters
+    },
+    parseArguments: true
+  }), 'global parseArguments set');
+  t.deepEqual([ {
+    arguments: [ 'one', 'double=two' ],
+    test: 'string',
+    another: 'quoted string'
+  } ], twitchdown('{@test one test=string "double=two" another="quoted string"}', {
+    customTags: {
+      test: {
+        handler: (parameters) => parameters,
+        parseArguments: true
+      }
+    }
+  }), 'tag parseArguments set');
+  t.deepEqual([ [ 'one', 'test=string', 'double=two', 'another="quoted string"' ] ],
+      twitchdown('{@test one test=string "double=two" another="quoted string"}', {
+    customTags: {
+      test: {
+        handler: (parameters) => parameters,
+        parseArguments: false
+      }
+    },
+    parseArguments: true
+  }), 'tag parseArguments overriding global');
+});
+
+test('allows customTag handlers as objects', (t) => {
+  t.deepEqual([ 'CUSTOM(value,value 2)' ], twitchdown('{@test value "value 2"}', {
+    customTags: {
+      test: {
+        handler: options.customTags.test
+      }
+    }
+  }));
+});
+
+test('puts tag in a paragraph if tagsInParagrah or inParagraph set', (t) => {
+  t.deepEqual([ 'CUSTOM(value,value 2)' ], twitchdown('{@test value "value 2"}', {
+    ...options,
+    tagsInParagraph: true
+  }), 'does not without paragraphs set');
+  t.deepEqual([ { type: 'p', props: null, children: [ 'CUSTOM(value,value 2)' ] } ], twitchdown('{@test value "value 2"}', {
+    ...options,
+    paragraphs: true,
+    tagsInParagraph: true
+  }), 'tagsInParagraph set');
+  t.deepEqual([ 'CUSTOM(value)', { type: 'p', props: null, children: [ 'CUSTOM(value,value 2)' ] } ], twitchdown('{@test value}{@again value "value 2"}', {
+    customTags: {
+      test: options.customTags.test,
+      again: {
+        handler: options.customTags.test,
+        inParagraph: true
+      }
+    },
+    paragraphs: true
+  }), 'tag inParagraph set');
+  t.deepEqual([ 'CUSTOM(value,value 2)' ], twitchdown('{@test value "value 2"}', {
+    customTags: {
+      test: {
+        handler: options.customTags.test,
+        inParagraph: false
+      }
+    },
+    tagsInParagraph: true,
+    paragraphs: true
+  }), 'tag inParagraph overrides global tagsInParagraph');
+});
