@@ -80,8 +80,9 @@ var elements = twitchdown(markdown, {
   customTags: {
     custom: {
       handler: customTag,
-      // If true and `paragraphs` is true , this tag will be placed p tags
+      // If set, this will override the global `tagsInParagraph` option
       inParagraph: true,
+      // If set, this will override the global `parseArguments` option
       parseArguments: false
     },
     super: superTag

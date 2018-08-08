@@ -178,7 +178,7 @@ module.exports = function parse(md, options) {
   }
 
   function splitAttributes (attributes, parseArguments) {
-    if (typeof parseArguments !== 'boolean' && !parseArguments) {
+    if (typeof parseArguments === 'undefined') {
       parseArguments = options.parseArguments;
     }
     var attributeTokenizer = /\s+((?:([-_a-zA-Z0-9]+)=)?(?:"((?:\\"|[^"])*)"|([^"\s}]+)))/g,
@@ -436,7 +436,11 @@ module.exports = function parse(md, options) {
     else if (token[18]) {
       if (options.customTags && options.customTags[token[18]]) {
         var inParagraph = (typeof options.customTags[token[18]] === 'object'
-            && options.customTags[token[18]].inParagraph) || options.tagsInParagraph;
+            && typeof options.customTags[token[18]] !== 'undefined')
+            ? options.customTags[token[18]].inParagraph : options.tagsInParagraph;
+        var parseArguments = (typeof options.customTags[token[18]] === 'object'
+            && typeof options.customTags[token[18]] !== 'undefined')
+            ? options.customTags[token[18]].parseArguments : options.parseArguments;
         addPrev(!inParagraph);
         if (options.paragraphs) {
           if (inParagraph) {
@@ -452,10 +456,11 @@ module.exports = function parse(md, options) {
           }
         }
         if (typeof options.customTags[token[18]] === 'function') {
-          chunk = options.customTags[token[18]](splitAttributes(token[19]));
+          chunk = options.customTags[token[18]](splitAttributes(token[19],
+              parseArguments));
         } else if (typeof options.customTags[token[18]].handler === 'function') {
           chunk = options.customTags[token[18]].handler(splitAttributes(token[19],
-              options.customTags[token[18]].parseArguments));
+              parseArguments));
         } else {
           chunk = null;
         }

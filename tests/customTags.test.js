@@ -45,7 +45,29 @@ test('parses attributes in an object if given parseArguments option', (t) => {
       test: (parameters) => parameters
     },
     parseArguments: true
-  }));
+  }), 'global parseArguments set');
+  t.deepEqual([ {
+    arguments: [ 'one', 'double=two' ],
+    test: 'string',
+    another: 'quoted string'
+  } ], twitchdown('{@test one test=string "double=two" another="quoted string"}', {
+    customTags: {
+      test: {
+        handler: (parameters) => parameters,
+        parseArguments: true
+      }
+    }
+  }), 'tag parseArguments set');
+  t.deepEqual([ [ 'one', 'test=string', 'double=two', 'another="quoted string"' ] ],
+      twitchdown('{@test one test=string "double=two" another="quoted string"}', {
+    customTags: {
+      test: {
+        handler: (parameters) => parameters,
+        parseArguments: false
+      }
+    },
+    parseArguments: true
+  }), 'tag parseArguments overriding global');
 });
 
 test('allows customTag handlers as objects', (t) => {
@@ -78,4 +100,14 @@ test('puts tag in a paragraph if tagsInParagrah or inParagraph set', (t) => {
     },
     paragraphs: true
   }), 'tag inParagraph set');
+  t.deepEqual([ 'CUSTOM(value,value 2)' ], twitchdown('{@test value "value 2"}', {
+    customTags: {
+      test: {
+        handler: options.customTags.test,
+        inParagraph: false
+      }
+    },
+    tagsInParagraph: true,
+    paragraphs: true
+  }), 'tag inParagraph overrides global tagsInParagraph');
 });
