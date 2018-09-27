@@ -110,6 +110,15 @@ test('Puts links, images, inline formatting, html tags (if inline) and single qu
 
   t.deepEqual([
     { type: 'p', props: { key: 0 }, children: [
+      { type: 'em', props: { key: 2 }, children: [ 'something' ] },
+      ' bye'
+    ] }
+  ], twitchdown('*something* bye', {
+    paragraphs: true
+  }), 'inline formatting');
+
+  t.deepEqual([
+    { type: 'p', props: { key: 0 }, children: [
       'test ',
       { type: 'img', props: { key: 1, src: 'image.png', alt: 'image', title: 'image' }, children: undefined },
       ' again'
