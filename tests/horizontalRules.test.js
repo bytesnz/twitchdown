@@ -4,17 +4,17 @@ import twitchdown from '../index';
 test('should parse ---', (t) => {
   t.deepEqual([
     'foo',
-    { type: 'hr', props: undefined, children: undefined },
+    { type: 'hr', props: { key: 0 }, children: undefined },
     'bar'
   ], twitchdown('foo\n\n---\nbar'));
   t.deepEqual([
     'foo',
-    { type: 'hr', props: undefined, children: undefined },
+    { type: 'hr', props: { key: 0 }, children: undefined },
     'bar'
   ], twitchdown('foo\n\n----\nbar'), '----');
   t.deepEqual([
-    { type: 'blockquote', props: null, children: [ 'foo' ] },
-    { type: 'hr', props: undefined, children: undefined },
+    { type: 'blockquote', props: { key: 0 }, children: [ 'foo' ] },
+    { type: 'hr', props: { key: 1 }, children: undefined },
     'bar'
   ], twitchdown('> foo\n\n---\nbar'));
 });
@@ -22,17 +22,17 @@ test('should parse ---', (t) => {
 test('should parse * * *', (t) => {
   t.deepEqual([
     'foo',
-    { type: 'hr', props: undefined, children: undefined },
+    { type: 'hr', props: { key: 0 }, children: undefined },
     'bar'
   ], twitchdown('foo\n* * *\nbar'));
   t.deepEqual([
     'foo',
-    { type: 'hr', props: undefined, children: undefined },
+    { type: 'hr', props: { key: 0 }, children: undefined },
     'bar'
   ], twitchdown('foo\n* * * *\nbar'), '* * * *');
   t.deepEqual([
-    { type: 'blockquote', props: null, children: [ 'foo' ] },
-    { type: 'hr', props: undefined, children: undefined },
+    { type: 'blockquote', props: { key: 0 }, children: [ 'foo' ] },
+    { type: 'hr', props: { key: 1 }, children: undefined },
     'bar'
   ], twitchdown('> foo\n\n* * *\nbar'));
 });
