@@ -52,6 +52,16 @@ module.exports = function parse(md, options) {
       }
 
       if (desc[1]) {
+        if (options.paragraphs && !tags.length) {
+          tags.push({
+            tag: 'p',
+            attributes: {
+              key: key++
+            },
+            out: out
+          });
+          out = [];
+        }
         tags.push({
           tag: desc[1],
           attributes: {
