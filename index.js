@@ -28,6 +28,20 @@ module.exports = function parse(md, options) {
   }
 
   /**
+   * Add a paragraph tag if there isn't already one
+   */
+  function addParagraph() {
+    tags.push({
+      tag: 'p',
+      attributes: {
+        key: key++
+      },
+      out: out
+    });
+    out = [];
+  }
+
+  /**
    * Handle a formatting tag from TAGS above
    */
   function tag(tagToken) {
@@ -53,14 +67,7 @@ module.exports = function parse(md, options) {
 
       if (desc[1]) {
         if (options.paragraphs && !tags.length) {
-          tags.push({
-            tag: 'p',
-            attributes: {
-              key: key++
-            },
-            out: out
-          });
-          out = [];
+          addParagraph();
         }
         tags.push({
           tag: desc[1],
@@ -168,14 +175,7 @@ module.exports = function parse(md, options) {
     if (prev) {
       prev = clean(prev, trimPrev);
       if (options.paragraphs && !tags.length) {
-        tags.push({
-          tag: 'p',
-          attributes: {
-            key: key++
-          },
-          out: out
-        });
-        out = [];
+        addParagraph();
       }
       out.push(clean(prev));
       prev = '';
@@ -356,14 +356,7 @@ module.exports = function parse(md, options) {
     else if (token[8]) {
       addPrev();
       if (options.paragraphs && !tags.length) {
-        tags.push({
-          tag: 'p',
-          attributes: {
-            key: key++
-          },
-          out: out
-        });
-        out = [];
+        addParagraph();
       }
       token[8] = token[8].replace(customTagerizer, function(s, customTag, attributes) {
         if (options.customTags && options.customTags[customTag]) {
@@ -411,14 +404,7 @@ module.exports = function parse(md, options) {
     else if (token[9]) {
       addPrev();
       if (options.paragraphs && !tags.length) {
-        tags.push({
-          tag: 'p',
-          attributes: {
-            key: key++
-          },
-          out: out
-        });
-        out = [];
+        addParagraph();
       }
       // Start a tag for link
       tags.push({
@@ -452,14 +438,7 @@ module.exports = function parse(md, options) {
     else if (token[16]) {
       addPrev();
       if (options.paragraphs && !tags.length) {
-        tags.push({
-          tag: 'p',
-          attributes: {
-            key: key++
-          },
-          out: out
-        });
-        out = [];
+        addParagraph();
       }
       chunk = e('code', { key: key++ }, [ encodeAttr(token[16]) ]);
     }
@@ -481,14 +460,7 @@ module.exports = function parse(md, options) {
         if (options.paragraphs) {
           if (inParagraph) {
             if (!tags.length) {
-              tags.push({
-                tag: 'p',
-                attributes: {
-                  key: key++
-                },
-                out: out
-              });
-              out = [];
+              addParagraph();
             }
           } else {
             flushTo('p');
