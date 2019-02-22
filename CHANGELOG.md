@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-## [1.3.1] - 2018-09-27
+## [1.3.1] - 2019-02-22
 ### Added
 - `key` values to each element as required by React
 - Render tests for both React and Preact
