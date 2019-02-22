@@ -28,6 +28,20 @@ module.exports = function parse(md, options) {
   }
 
   /**
+   * Add a paragraph tag if there isn't already one
+   */
+  function addParagraph() {
+    tags.push({
+      tag: 'p',
+      attributes: {
+        key: key++
+      },
+      out: out
+    });
+    out = [];
+  }
+
+  /**
    * Handle a formatting tag from TAGS above
    */
   function tag(tagToken) {
@@ -37,7 +51,7 @@ module.exports = function parse(md, options) {
     if (desc[1] && tags.length && tags[tags.length - 1].tag === desc[1]
         && tags[tags.length - 1].tagToken === tagToken) {
       var currentTag = tags.pop();
-      currentTag.out.push(e(currentTag.tag, null, out));
+      currentTag.out.push(e(currentTag.tag, { key: key++ }, out));
       out = currentTag.out;
     } else {
       if (desc[0]) {
@@ -47,13 +61,19 @@ module.exports = function parse(md, options) {
         if (options.paragraphs && desc[0] === 'br' && (!tags.length || tags[tags.length - 1].tag === 'p')) {
           // Create a new paragraph
         } else {
-          out.push(e(desc[0]));
+          out.push(e(desc[0], { key: key++ }));
         }
       }
 
       if (desc[1]) {
+        if (options.paragraphs && !tags.length) {
+          addParagraph();
+        }
         tags.push({
           tag: desc[1],
+          attributes: {
+            key: key++
+          },
           tagToken: tagToken,
           out: out
         });
@@ -155,11 +175,7 @@ module.exports = function parse(md, options) {
     if (prev) {
       prev = clean(prev, trimPrev);
       if (options.paragraphs && !tags.length) {
-        tags.push({
-          tag: 'p',
-          out: out
-        });
-        out = [];
+        addParagraph();
       }
       out.push(clean(prev));
       prev = '';
@@ -255,6 +271,8 @@ module.exports = function parse(md, options) {
       links = options.referenceLinks || {},
       last = 0,
       tags = [],
+      key = 0,
+      i,
       lastIsBlock = false,
       chunk, prev, token, t,
       customTagerizer = /{@(\w+)((?:\s+(?:"(?:\\"|[^"])*"|[^"\s}]*))*)}/;
@@ -288,6 +306,7 @@ module.exports = function parse(md, options) {
         chunk = options.highlight(token[3], token[2])
       } else {
         chunk = e('pre', {
+          key: key++,
           className: 'code' + (token[2] && ' ' + token[2].toLowerCase())
         }, [ outdent(encodeAttr(token[3]).replace(/^\n+|\n+$/g, '')) ]);
         lastIsBlock = true;
@@ -300,6 +319,7 @@ module.exports = function parse(md, options) {
         flushTo('p');
       }
       chunk = e('pre', {
+          key: key++,
         className: 'code poetry'
       }, [ outdent(encodeAttr(token[4]).replace(/^\n+|\n+$/g, '')) ]);
       lastIsBlock = true;
@@ -316,7 +336,7 @@ module.exports = function parse(md, options) {
       }
       var parseOptions = Object.assign({}, options, { referenceLinks: links, paragraphs: false });
       if (t === '>') {
-        chunk = e('blockquote', null, parse(outdent(token[5].replace(/^>\s*/gm, '')),
+        chunk = e('blockquote', { key: key++ }, parse(outdent(token[5].replace(/^>\s*/gm, '')),
             parseOptions));
         lastIsBlock = true;
       } else {
@@ -326,9 +346,9 @@ module.exports = function parse(md, options) {
         var items = [];
         var item;
         while ((item = listSplitter.exec(token[5]))) {
-          items.push(e('li', null, parse(item[1], parseOptions)));
+          items.push(e('li', { key: key++ }, parse(item[1], parseOptions)));
         }
-        chunk = e(t, null, items);
+        chunk = e(t, { key: key++ }, items);
         lastIsBlock = true;
       }
     }
@@ -336,11 +356,7 @@ module.exports = function parse(md, options) {
     else if (token[8]) {
       addPrev();
       if (options.paragraphs && !tags.length) {
-        tags.push({
-          tag: 'p',
-          out: out
-        });
-        out = [];
+        addParagraph();
       }
       token[8] = token[8].replace(customTagerizer, function(s, customTag, attributes) {
         if (options.customTags && options.customTags[customTag]) {
@@ -352,12 +368,14 @@ module.exports = function parse(md, options) {
       var props;
       if (token[7]) {
         props = {
+          key: key++,
           src: encodeAttr(token[8]),
           alt: encodeAttr(token[7]),
           title: encodeAttr(token[7])
         }
       } else {
         props = {
+          key: key++,
           src: encodeAttr(token[8])
         }
       }
@@ -376,25 +394,25 @@ module.exports = function parse(md, options) {
             }
           });
         }
-        tags[tags.length - 1].attributes = {
-          href: encodeAttr(token[11] || links[prev.toLowerCase().trim()])
-        };
+        var href = token[11] || links[prev.toLowerCase().trim()];
+        if (href) {
+          tags[tags.length - 1].attributes.href = encodeAttr(href);
+        }
       }
       flushTo('a');
     }
     else if (token[9]) {
       addPrev();
       if (options.paragraphs && !tags.length) {
-        tags.push({
-          tag: 'p',
-          out: out
-        });
-        out = [];
+        addParagraph();
       }
       // Start a tag for link
       tags.push({
         index: token.index,
         tag: 'a',
+        attributes: {
+          key: key++
+        },
         out: out
       });
       out = [];
@@ -409,8 +427,9 @@ module.exports = function parse(md, options) {
       }
       chunk = e(t,
         options.headingIds ? {
+          key: key++,
           id: iderize(token[12] || token[15])
-        } : null,
+        } : { key: key++ },
         parse(token[12] || token[15],
         Object.assign({}, options, { referenceLinks: links, paragraphs: false })));
       lastIsBlock = true;
@@ -419,13 +438,9 @@ module.exports = function parse(md, options) {
     else if (token[16]) {
       addPrev();
       if (options.paragraphs && !tags.length) {
-        tags.push({
-          tag: 'p',
-          out: out
-        });
-        out = [];
+        addParagraph();
       }
-      chunk = e('code', null, [ encodeAttr(token[16]) ]);
+      chunk = e('code', { key: key++ }, [ encodeAttr(token[16]) ]);
     }
     // Inline formatting: *em*, **strong** & friends
     else if (token[17] || token[1]) {
@@ -445,11 +460,7 @@ module.exports = function parse(md, options) {
         if (options.paragraphs) {
           if (inParagraph) {
             if (!tags.length) {
-              tags.push({
-                tag: 'p',
-                out: out
-              });
-              out = [];
+              addParagraph();
             }
           } else {
             flushTo('p');
@@ -479,6 +490,18 @@ module.exports = function parse(md, options) {
           flushTo(token[21]);
         }
       } else {
+        if (token[22]) {
+          token[22] = splitAttributes(token[22], true);
+          if (token[22].arguments.length) {
+            for (i = 0; i < token[22].arguments.length; i++) {
+              token[22][token[22].arguments[i]] = true;
+            }
+          }
+          delete token[22].arguments;
+          token[22].key = key++;
+        } else {
+          token[22] = { key: key++ }
+        }
         // Create new tag
         addPrev();
         tags.push({

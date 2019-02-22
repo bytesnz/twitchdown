@@ -24,14 +24,14 @@ test('parses multiple custom tags correctly', (t) => {
 });
 
 test('parses custom tag inside of image urls and links', (t) => {
-  t.deepEqual([ { type: 'img', props: { src: 'CUSTOM(id,again)', alt: 'title', title: 'title' }, children: undefined } ], twitchdown('![title]({@test id "again"})', options), 'image');
+  t.deepEqual([ { type: 'img', props: { key: 0 , src: 'CUSTOM(id,again)', alt: 'title', title: 'title' }, children: undefined } ], twitchdown('![title]({@test id "again"})', options), 'image');
 
-  t.deepEqual([ { type: 'a', props: { href: 'CUSTOM(id,again)' }, children: [ 'Snarkdown' ] } ], twitchdown('[Snarkdown]({@test id "again"})', options), 'link');
+  t.deepEqual([ { type: 'a', props: { key: 0 , href: 'CUSTOM(id,again)' }, children: [ 'Snarkdown' ] } ], twitchdown('[Snarkdown]({@test id "again"})', options), 'link');
 
-  t.deepEqual([ 'hello ', { type: 'a', props: { href: 'CUSTOM(id,again)' }, children: [ 'World' ] }, '!' ], twitchdown('\nhello [World]!\n[world]: {@test id "again"}', options), 'reference link');
+  t.deepEqual([ 'hello ', { type: 'a', props: { key: 0 , href: 'CUSTOM(id,again)' }, children: [ 'World' ] }, '!' ], twitchdown('\nhello [World]!\n[world]: {@test id "again"}', options), 'reference link');
 
-  t.deepEqual([ { type: 'a', props: { href: 'CUSTOM(link,again)' }, children: [
-    { type: 'img', props: { src: 'CUSTOM(id,again)' }, children: undefined }
+  t.deepEqual([ { type: 'a', props: { key: 0 , href: 'CUSTOM(link,again)' }, children: [
+    { type: 'img', props: { key: 1 , src: 'CUSTOM(id,again)' }, children: undefined }
   ] } ], twitchdown('[![]({@test id "again"})]({@test link "again"})', options), 'image inside link');
 });
 
@@ -85,12 +85,12 @@ test('puts tag in a paragraph if tagsInParagrah or inParagraph set', (t) => {
     ...options,
     tagsInParagraph: true
   }), 'does not without paragraphs set');
-  t.deepEqual([ { type: 'p', props: null, children: [ 'CUSTOM(value,value 2)' ] } ], twitchdown('{@test value "value 2"}', {
+  t.deepEqual([ { type: 'p', props: { key: 0 }, children: [ 'CUSTOM(value,value 2)' ] } ], twitchdown('{@test value "value 2"}', {
     ...options,
     paragraphs: true,
     tagsInParagraph: true
   }), 'tagsInParagraph set');
-  t.deepEqual([ 'CUSTOM(value)', { type: 'p', props: null, children: [ 'CUSTOM(value,value 2)' ] } ], twitchdown('{@test value}{@again value "value 2"}', {
+  t.deepEqual([ 'CUSTOM(value)', { type: 'p', props: { key: 0 }, children: [ 'CUSTOM(value,value 2)' ] } ], twitchdown('{@test value}{@again value "value 2"}', {
     customTags: {
       test: options.customTags.test,
       again: {

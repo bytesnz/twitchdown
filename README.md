@@ -114,7 +114,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## Unreleased
+
+## [1.3.1] - 2019-02-22
+### Added
+- `key` values to each element as required by React
+- Render tests for both React and Preact
+- Reference links to CHANGELOG
+
+### Changed
+- Fix paragraph and inline formatting issue that caused inline formatted text
+  to be left outside of a paragraph
+- Fixed parsing of attributes in html tags
+
+### Removed
+- `href` attribute if href not given and not reference link available
 
 ## [1.3.0] - 2018-08-08
 ### Added
@@ -157,5 +171,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Change code to ES3
 
-## [1.0.0] - 2018-07-10
+## 1.0.0 - 2018-07-10
 Initial Release
+
+[1.3.1]: https://gitlab.com/bytesnz/twitchdown/compare/v1.3.0...v1.3.1
+[1.3.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.2.0...v1.3.0
+[1.2.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.1.0...v1.2.0
+[1.1.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.0.1...v1.1.0
+[1.0.1]: https://gitlab.com/bytesnz/twitchdown/compare/v1.0.0...v1.0.1

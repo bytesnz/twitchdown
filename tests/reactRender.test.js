@@ -1,0 +1,48 @@
+/* eslint-disable no-console */
+import test from 'ava';
+import twitchdown from '../index';
+import { readFileSync } from 'fs';
+import { createElement } from 'react';
+import { resolve } from 'path';
+
+test.beforeEach((t) => {
+  t.context.old = {
+    log: console.log,
+    warn: console.warn,
+    error: console.error,
+    debug: console.debug
+  };
+
+  t.context.logs = [];
+  const newLog = (level) => (...messages) => t.context.logs.push({
+    level,
+    messages
+  });
+
+  console.log = newLog('log');
+  console.warn = newLog('warn');
+  console.error = newLog('error');
+  console.debug = newLog('debug');
+});
+
+test.afterEach((t) => {
+  console.log = t.context.old.log;
+  console.warn = t.context.old.warn;
+  console.error = t.context.old.error;
+  console.debug = t.context.old.debug;
+});
+
+test('that it renders using React without any errors', (t) => {
+  const markdown = readFileSync(resolve(__dirname, '../README.md')).toString();
+
+  createElement('p', {}, twitchdown(markdown, {
+    createElement
+  }));
+
+  if (t.context.logs.length) {
+    t.log(JSON.stringify(twitchdown('## [2018-09-28] - test')));
+    t.log(twitchdown(markdown));
+    t.log(t.context.logs);
+  }
+  t.deepEqual([], t.context.logs, 'No logs created');
+});
