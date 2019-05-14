@@ -1,5 +1,24 @@
 "use strict";
 
+// From https://github.com/sindresorhus/html-tags/blob/master/html-tags-void.json
+var voidTags = [
+  "area",
+  "base",
+  "br",
+  "col",
+  "embed",
+  "hr",
+  "img",
+  "input",
+  "link",
+  "menuitem",
+  "meta",
+  "param",
+  "source",
+  "track",
+  "wbr"
+];
+
 /**
  * Turn Markdown into react-like objects
  */
@@ -237,11 +256,14 @@ module.exports = function parse(md, options) {
   var e;
   if (!options.createElement) {
     e = function (type, props, children) {
-      return {
+      var element = {
         type: type,
-        props: props,
-        children: children
+        props: props
       };
+      if (children) {
+        element.children = children;
+      }
+      return element;
     };
   } else {
     e = options.createElement;
@@ -264,9 +286,9 @@ module.exports = function parse(md, options) {
    * (?:`(!16![^`].*?)`)|  - Inline code
    * (!17!  \n\n*|\n{2,}|__|\*\*|[_*]|~~)| - Formatters
    * (?:{@(!18!\w+)(!19!(?:\s+(?:[-_a-zA-Z0-9]+=)?(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})| - Special {@ } MD Tag
-   * (?:<\s*(!20!\/)(!21!\w+)(!22! [^>]+)?>) - HTML Tag
+   * (?:<\s*(!20!\/)(!21!\w+)(!22! [^>]+?)?\s*\/?>) - HTML Tag
    */
-  var tokenizer = /((?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|(?:^``` *(\w*)\n([\s\S]*?)\n```$)|((?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)|((?:(?:^|\n)([>*+-]|\d+\.)\s+.*)+)|(?:!\[([^\]]*?)\]\(([^)]+?)\))|(\[)|(\](?:\(([^)]+?)\))?)|(?:(?:^|\n+)([^\s].*)\n(-{3,}|={3,})(?:\n+|$))|(?:(?:^|\n+)(#{1,6})\s*(.+)(?:\n+|$))|(?:`([^`].*?)`)|( {2}\n\n*|\n{2,}|__|\*\*|[_*]|~~)|(?:{@(\w+)((?:\s+(?:[-_a-zA-Z0-9]+=)?(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})|(?:<\s*(\/?)(\w+)( [^>]+)?>)/gm,
+  var tokenizer = /((?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|(?:^``` *(\w*)\n([\s\S]*?)\n```$)|((?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)|((?:(?:^|\n)([>*+-]|\d+\.)\s+.*)+)|(?:!\[([^\]]*?)\]\(([^)]+?)\))|(\[)|(\](?:\(([^)]+?)\))?)|(?:(?:^|\n+)([^\s].*)\n(-{3,}|={3,})(?:\n+|$))|(?:(?:^|\n+)(#{1,6})\s*(.+)(?:\n+|$))|(?:`([^`].*?)`)|( {2}\n\n*|\n{2,}|__|\*\*|[_*]|~~)|(?:{@(\w+)((?:\s+(?:[-_a-zA-Z0-9]+=)?(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})|(?:<\s*(\/?)(\w+)( [^>]+?)?\s*\/?>)/gm,
       out = [],
       links = options.referenceLinks || {},
       last = 0,
@@ -502,15 +524,19 @@ module.exports = function parse(md, options) {
         } else {
           token[22] = { key: key++ }
         }
-        // Create new tag
         addPrev();
-        tags.push({
-          index: token.index,
-          tag: token[21],
-          attributes: token[22],
-          out: out
-        });
-        out = [];
+        if (voidTags.indexOf(token[21]) !== -1) {
+          out.push(e(token[21], token[22]));
+        } else {
+          // Create new tag
+          tags.push({
+            index: token.index,
+            tag: token[21],
+            attributes: token[22],
+            out: out
+          });
+          out = [];
+        }
 
         prev = '';
       }

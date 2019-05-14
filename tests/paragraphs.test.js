@@ -27,7 +27,7 @@ test('doesn\'t wrap headings, code blocks, lists, custom tags and html tags (if 
 
   t.deepEqual([
     { type: 'p', props: { key: 0 }, children: [ 'hello' ] },
-    { type: 'hr', props: { key: 1 }, children: undefined },
+    { type: 'hr', props: { key: 1 } },
     { type: 'p', props: { key: 2 }, children: [ 'bye' ] }
   ], twitchdown('hello\n* * *\nbye', {
     paragraphs: true
@@ -120,7 +120,7 @@ test('Puts links, images, inline formatting, html tags (if inline) and single qu
   t.deepEqual([
     { type: 'p', props: { key: 0 }, children: [
       'test ',
-      { type: 'img', props: { key: 1, src: 'image.png', alt: 'image', title: 'image' }, children: undefined },
+      { type: 'img', props: { key: 1, src: 'image.png', alt: 'image', title: 'image' } },
       ' again'
     ] }
   ], twitchdown('test ![image](image.png) again', {
@@ -129,7 +129,7 @@ test('Puts links, images, inline formatting, html tags (if inline) and single qu
 
   t.deepEqual([
     { type: 'p', props: { key: 0 }, children: [
-      { type: 'img', props: { key: 1, src: 'image.png', alt: 'image', title: 'image' }, children: undefined },
+      { type: 'img', props: { key: 1, src: 'image.png', alt: 'image', title: 'image' } },
       ' woot'
     ] }
   ], twitchdown('![image](image.png) woot', {

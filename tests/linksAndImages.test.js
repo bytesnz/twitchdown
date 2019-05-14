@@ -10,18 +10,18 @@ test('parses anchor links', (t) => {
 });
 
 test('parses images', (t) => {
-  t.deepEqual([ { type: 'img', props: { key: 0, src: 'foo.png', alt: 'title', title: 'title' }, children: undefined } ], twitchdown('![title](foo.png)'));
-  t.deepEqual([ { type: 'img', props: { key: 0, src: 'foo.png' }, children: undefined } ], twitchdown('![](foo.png)'));
+  t.deepEqual([ { type: 'img', props: { key: 0, src: 'foo.png', alt: 'title', title: 'title' } } ], twitchdown('![title](foo.png)'));
+  t.deepEqual([ { type: 'img', props: { key: 0, src: 'foo.png' } } ], twitchdown('![](foo.png)'));
 });
 
 test('parses images within links', (t) => {
   t.deepEqual([ { type: 'a', props: { key: 0 , href: '#toc' }, children: [
-    { type: 'img', props: { key: 1 , src: 'toc.png' }, children: undefined }
+    { type: 'img', props: { key: 1 , src: 'toc.png' } }
   ] } ], twitchdown('[![](toc.png)](#toc)'));
   t.deepEqual([ { type: 'a', props: { key: 0, href: '#a' }, children: [
-    { type: 'img', props: { key: 1, src: 'a.png', alt: 'a', title: 'a' }, children: undefined }
+    { type: 'img', props: { key: 1, src: 'a.png', alt: 'a', title: 'a' } }
   ] }, ' ', {type: 'a', props: { key: 2, href: '#b' }, children: [
-    { type: 'img', props: { key: 3, src: 'b.png', alt: 'b', title: 'b' }, children: undefined }
+    { type: 'img', props: { key: 3, src: 'b.png', alt: 'b', title: 'b' } }
   ] } ], twitchdown('[![a](a.png)](#a) [![b](b.png)](#b)'));
 });
 
