@@ -21,12 +21,12 @@
   "license": "GPL-3.0",
   "runkitExampleFilename": "example.js",
   "devDependencies": {
-    "ava": "1.2.1",
-    "eslint": "5.14.1",
+    "ava": "1.4.1",
+    "eslint": "5.16.0",
     "mock-require": "3.0.3",
     "preact": "8.4.2",
-    "react": "16.8.3",
-    "sinon": "7.2.4",
+    "react": "16.8.6",
+    "sinon": "7.3.2",
     "uglify-js": "^3.4.5"
   }
 }
