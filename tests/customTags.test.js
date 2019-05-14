@@ -24,14 +24,14 @@ test('parses multiple custom tags correctly', (t) => {
 });
 
 test('parses custom tag inside of image urls and links', (t) => {
-  t.deepEqual([ { type: 'img', props: { key: 0 , src: 'CUSTOM(id,again)', alt: 'title', title: 'title' }, children: undefined } ], twitchdown('![title]({@test id "again"})', options), 'image');
+  t.deepEqual([ { type: 'img', props: { key: 0 , src: 'CUSTOM(id,again)', alt: 'title', title: 'title' } } ], twitchdown('![title]({@test id "again"})', options), 'image');
 
   t.deepEqual([ { type: 'a', props: { key: 0 , href: 'CUSTOM(id,again)' }, children: [ 'Snarkdown' ] } ], twitchdown('[Snarkdown]({@test id "again"})', options), 'link');
 
   t.deepEqual([ 'hello ', { type: 'a', props: { key: 0 , href: 'CUSTOM(id,again)' }, children: [ 'World' ] }, '!' ], twitchdown('\nhello [World]!\n[world]: {@test id "again"}', options), 'reference link');
 
   t.deepEqual([ { type: 'a', props: { key: 0 , href: 'CUSTOM(link,again)' }, children: [
-    { type: 'img', props: { key: 1 , src: 'CUSTOM(id,again)' }, children: undefined }
+    { type: 'img', props: { key: 1 , src: 'CUSTOM(id,again)' } }
   ] } ], twitchdown('[![]({@test id "again"})]({@test link "again"})', options), 'image inside link');
 });
 
