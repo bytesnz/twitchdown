@@ -5,6 +5,13 @@ test('wraps text in a paragraph if enabled', (t) => {
   t.deepEqual([ { type: 'p', props: { key: 0 }, children: [ 'hello' ] } ], twitchdown('hello', {
     paragraphs: true
   }));
+  t.deepEqual([
+    { type: 'p', props: { key: 0 }, children: [ 'hello' ] },
+    { type: 'p', props: { key: 1 }, children: [ 'test' ] },
+    { type: 'p', props: { key: 2 }, children: [ 'test again' ] }
+  ], twitchdown('hello\n<p>test</p>\n<p>test again</p>', {
+    paragraphs: true
+  }));
 });
 
 test('doesn\'t wrap headings, code blocks, lists, custom tags and html tags (if separate) in paragraphs', (t) => {
