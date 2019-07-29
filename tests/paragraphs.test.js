@@ -161,9 +161,9 @@ test('Puts links, images, inline formatting, html tags (if inline) and single qu
   }), 'text then code');
 
   t.deepEqual([
-    { type: 'p', props: { key: 1 }, children: [
+    { type: 'p', props: { key: 0 }, children: [
       'hello ',
-      { type: 'test', props: { key: 0 }, children: [ 'something' ] },
+      { type: 'test', props: { key: 1 }, children: [ 'something' ] },
       ' bye'
     ] }
   ], twitchdown('hello <test>something</test> bye', {
