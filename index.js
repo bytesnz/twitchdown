@@ -421,6 +421,13 @@ module.exports = function parse(md, options) {
         var href = token[11] || links[prev.toLowerCase().trim()];
         if (href) {
           tags[tags.length - 1].attributes.href = encodeAttr(href);
+
+          if (
+            options.openExternalInNewWindow &&
+            tags[tags.length - 1].attributes.href.match(/^https?:\/\//)
+          ) {
+            tags[tags.length - 1].attributes.target = '_blank'
+          }
         }
       }
       flushTo('a');
