@@ -3,6 +3,12 @@ import twitchdown from '../index';
 
 test('parses links', (t) => {
   t.deepEqual([ { type: 'a', props: { key: 0, href: 'http://example.com' }, children: [ 'World' ] } ], twitchdown('[World](http://example.com)'));
+  t.deepEqual([ 'hello ', { type: 'a', props: { key: 0, href: 'http://example.com' }, children: [ 'World' ] }, ' ago' ], twitchdown('hello [World](http://example.com) ago'));
+  t.deepEqual([ 'hello', { type: 'a', props: { key: 0, href: 'http://example.com' }, children: [ 'World' ] }, 'ago' ], twitchdown('hello[World](http://example.com)ago'));
+});
+
+test('newline before and after link rendered as space', (t) => {
+  t.deepEqual([ 'hello ', { type: 'a', props: { key: 0, href: 'http://example.com' }, children: [ 'World' ] }, ' again' ], twitchdown('hello\n[World](http://example.com)\nagain'));
 });
 
 test('parses anchor links', (t) => {
