@@ -47,3 +47,8 @@ test('should not add href to link if do not have href or ref', (t) => {
   t.deepEqual([ { type: 'a', props: { key: 0, }, children: [ 'World' ] } ], twitchdown('[World]'));
 });
 
+test('sets external links to open in a new window (_blank)', (t) => {
+  t.deepEqual([ { type: 'a', props: { key: 0, href: 'http://example.com', target: '_blank' }, children: [ 'World' ] } ], twitchdown('[World](http://example.com)', { openExternalInNewWindow: true }));
+  t.deepEqual([ { type: 'a', props: { key: 0, href: '#example' }, children: [ 'Example' ] } ], twitchdown('[Example](#example)', { openExternalInNewWindow: true }));
+  t.deepEqual([ 'hello ', { type: 'a', props: { key: 0, href: 'http://example.com', target: '_blank' }, children: [ 'World' ] }, '!' ], twitchdown('\nhello [World]!', { openExternalInNewWindow: true, referenceLinks: { world: 'http://example.com' } }));
+});
