@@ -19,7 +19,7 @@ test('ensure the example code runs', (t) => {
   t.is(1, twitchSpy.callCount);
   t.deepEqual([
     { type: "h1", props: { key: 0 , id: "test" }, children: [ "Test" ] },
-    { type: "p", props: { key: 3 }, children: [ "This is some ", "test", " markdown" ] },
+    { type: "p", props: { key: 2 }, children: [ "This is some ", "test", " markdown" ] },
     { type: "ul", props: { key: 6 }, children: [
       { type: "li", props: { key: 4 }, children: [
         "good ",

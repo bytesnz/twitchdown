@@ -193,10 +193,12 @@ module.exports = function parse(md, options) {
   function addPrev(trimPrev) {
     if (prev) {
       prev = clean(prev, trimPrev);
-      if (options.paragraphs && !tags.length) {
-        addParagraph();
+      if (prev) {
+        if (options.paragraphs && !tags.length) {
+          addParagraph();
+        }
+        out.push(clean(prev));
       }
-      out.push(clean(prev));
       prev = '';
     }
   }
@@ -512,6 +514,10 @@ module.exports = function parse(md, options) {
           flushTo(token[21]);
         }
       } else {
+        addPrev(token[21] === 'p');
+        if (token[21] === 'p' && options.paragraphs) {
+          flushTo('p');
+        }
         if (token[22]) {
           token[22] = splitAttributes(token[22], true);
           if (token[22].arguments.length) {
@@ -524,7 +530,6 @@ module.exports = function parse(md, options) {
         } else {
           token[22] = { key: key++ }
         }
-        addPrev();
         if (voidTags.indexOf(token[21]) !== -1) {
           out.push(e(token[21], token[22]));
         } else {
@@ -537,7 +542,6 @@ module.exports = function parse(md, options) {
           });
           out = [];
         }
-
         prev = '';
       }
     }
