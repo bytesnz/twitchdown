@@ -3,6 +3,7 @@ twitchdown
 
 [![pipeline status](https://gitlab.com/bytesnz/twitchdown/badges/master/pipeline.svg)](https://gitlab.com/bytesnz/twitchdown/commits/master)
 [![npm](https://bytes.nz/b/twitchdown/npm)](https://gitlab.com/bytesnz/twitchdown)
+[![developtment time](https://bytes.nz/b/twitchdown/custom?color=yellow&name=development+time&value=~80+hours)](https://gitlab.com/bytesnz/twitchdown/blob/master/.tickings)
 
 Dead simple Markdown parser for react-like libraries
 
