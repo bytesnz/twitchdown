@@ -64,6 +64,8 @@ var elements = twitchdown(markdown, {
   parseArguments: true,
   // If true and `paragraphs` is true , custom tags will be placed p tags
   tagsInParagraph: false,
+  // Opens external links in a new window
+  openExternalInNewWindow: true,
   // Reference links
   referenceLinks: {
     me: 'https://example.com/'

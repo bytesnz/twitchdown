@@ -6,7 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-## [1.3.3] - 2019-07-29
+## Added
+- `openExternalInNewWindow` option to open external links in a new window
+
+## [1.3.3] - 2020-02-15
 
 ## Changed
 - Fixed handling of p tags when using paragraphs option
