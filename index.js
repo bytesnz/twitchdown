@@ -281,7 +281,7 @@ module.exports = function parse(md, options) {
     '((?:^|\\n+)(?:\\n---+|\\* \\*(?: \\*)+)\\n)|' + // Horizontal rules
     '(?:^``` *(\\w*)\\n([\\s\\S]*?)\\n```$)|' + // Code blocks
     '((?:(?:^|\\n+)(?:\\t|  {2,}).+)+\\n*)|' + // Code continue
-    '((?:(?:^|\\n)([>*+-]|\\d+\\.)\\s+.*)+)|' + // Quotes and lists
+    '((?:(?:^|\\n)([>*+-]|\\d+\\.)\\s+.*(?:\\n[ \\t]+.*)*)+)|' + // Quotes and lists
     '(?:!\\[([^\\]]*?)\\]\\(([^)]+?)\\))|' + // Images
     '(\\[)|(\\](?:\\(([^)]+?)\\))?)|' + // Links
     '(?:(?:^|\\n+)([^\\s].*)\\n(-{3,}|={3,})(?:\\n+|$))|' + // Underlined Headings
@@ -366,14 +366,13 @@ module.exports = function parse(md, options) {
         lastIsBlock = true;
       } else {
         t = t.match(/^\d+\./) ? 'ol' : 'ul';
-        // var listSplitter = /^(.*)(\n|$)/gm;
-        var listSplitter = /^[*+-.]\s(.*)/gm;
-        var items = [];
-        var item;
-        while ((item = listSplitter.exec(token[5]))) {
-          items.push(e('li', { key: key++ }, parse(item[1], parseOptions)));
+        var items = token[5].split(/^[*+-.]\s/gm);
+        var eItems = [];
+        items.shift();
+        for (i = 0; i < items.length; i++) {
+          eItems.push(e('li', { key: key++ }, parse(items[i], parseOptions)));
         }
-        chunk = e(t, { key: key++ }, items);
+        chunk = e(t, { key: key++ }, eItems);
         lastIsBlock = true;
       }
     }
