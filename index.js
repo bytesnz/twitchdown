@@ -297,7 +297,7 @@ module.exports = function parse(md, options) {
       last = 0,
       tags = [],
       key = 0,
-      i,
+      i, j,
       lastIsBlock = false,
       chunk, prev, token, t,
       customTagerizer = /{@(\w+)((?:\s+(?:"(?:\\"|[^"])*"|[^"\s}]*))*)}/;
@@ -370,6 +370,19 @@ module.exports = function parse(md, options) {
         var eItems = [];
         items.shift();
         for (i = 0; i < items.length; i++) {
+          var lines = items[i].split('\n');
+          if (lines.length > 1) {
+            // Get the indentation from the first line
+            var spacing = lines[1].match(/^[ \t]+/);
+            if (spacing) {
+              spacing = new RegExp('^' + spacing[0]);
+              for (j = 1; j < lines.length; j++) {
+                lines[j] = lines[j].replace(spacing, '');
+              }
+
+              items[i] = lines.join('\n');
+            }
+          }
           eItems.push(e('li', { key: key++ }, parse(items[i], parseOptions)));
         }
         chunk = e(t, { key: key++ }, eItems);
