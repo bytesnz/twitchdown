@@ -148,6 +148,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Added
 - `openExternalInNewWindow` option to open external links in a new window
 
+## Fixed
+- Handling of sub-lists and multi-line items in lists
+
 ## [1.3.3] - 2020-02-15
 
 ## Changed
