@@ -22,6 +22,32 @@ work
   [react-syntax-highlighter](https://github.com/conorhastings/react-syntax-highlighter)
 - Minified version included (`require('twitchdown/index.min')`)
 
+## Limitations
+As twitchdown uses regular expressions for parsing, it is limited in the
+formatting that it can handle. Although most good practices should be handled
+correctly, here are some formatting issues that aren't
+- lists with paragraphs
+  ```
+  - item
+  - item
+
+    with a paragraph break
+  - item
+  ```
+- items where line continuations aren't indented
+  ```
+  - item
+  - item
+  continued item
+  - item
+  ```
+- items without spacing between the point and the text
+  ```
+  - item
+  -item
+  - item
+  ```
+
 ## Example
 For a more "real life" example with lazy loading, see the
 [Markdown](https://bytes.nz/8jf749h) component of [MARSS](https://gitlab.com/bytesnz/marss)
