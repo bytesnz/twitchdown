@@ -276,27 +276,28 @@ module.exports = function parse(md, options) {
    * converts Markdown syntax into HTML elements. Anything not matched by this
    * regular expression is considered to be just plain text. Below is a
    * breakdown of the parts of regular expression
-   *
-   * (!1!(?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)| - Horizontal rules
-   * (?:^``` *(!2!\w*)\n(!3![\s\S]*?)\n```$)|  - Code block
-   * (!4!(?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)| - Code continue
-   * (!5!(?:(?:^|\n)(!6![>*+-]|\d+\.)\s+.*)+)| - Quotes and lists
-   * (?:\!\[(!7![^\]]*?)\]\((!8![^\)]+?)\))|  - Image
-   * (!9!\[)|(!10!\](?:\((!11![^\)]+?)\))?)|  - Link
-   * (?:(?:^|\n+)(!12![^\s].*)\n(!13!\-{3,}|={3,})(?:\n+|$))|  - Headings
-   * (?:(?:^|\n+)(!14!#{1,6})\s*(!15!.+)(?:\n+|$))|  - Headings
-   * (?:`(!16![^`].*?)`)|  - Inline code
-   * (!17!  \n\n*|\n{2,}|__|\*\*|[_*]|~~)| - Formatters
-   * (?:{@(!18!\w+)(!19!(?:\s+(?:[-_a-zA-Z0-9]+=)?(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})| - Special {@ } MD Tag
-   * (?:<\s*(!20!\/)(!21!\w+)(!22! [^>]+?)?\s*\/?>) - HTML Tag
    */
-  var tokenizer = /((?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|(?:^``` *(\w*)\n([\s\S]*?)\n```$)|((?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)|((?:(?:^|\n)([>*+-]|\d+\.)\s+.*)+)|(?:!\[([^\]]*?)\]\(([^)]+?)\))|(\[)|(\](?:\(([^)]+?)\))?)|(?:(?:^|\n+)([^\s].*)\n(-{3,}|={3,})(?:\n+|$))|(?:(?:^|\n+)(#{1,6})\s*(.+)(?:\n+|$))|(?:`([^`].*?)`)|( {2}\n\n*|\n{2,}|__|\*\*|[_*]|~~)|(?:{@(\w+)((?:\s+(?:[-_a-zA-Z0-9]+=)?(?:"(?:\\"|[^"])*"|[^"\s}]*))*)})|(?:<\s*(\/?)(\w+)( [^>]+?)?\s*\/?>)/gm,
+  var tokenizer = new RegExp(
+    '((?:^|\\n+)(?:\\n---+|\\* \\*(?: \\*)+)\\n)|' + // Horizontal rules (1)
+    '(?:^``` *(\\w*)\\n([\\s\\S]*?)\\n```$)|' + // Code blocks (2,3)
+    '((?:(?:^|\\n+)(?:\\t|  {2,}).+)+\\n*)|' + // Code continue (4)
+    '((?:(?:^|\\n)([>*+-]|\\d+\\.)\\s+.*(?:\\n[ \\t]+.*)*)+)|' + // Quotes and lists (5,6)
+    '(?:!\\[([^\\]]*?)\\]\\(([^)]+?)\\))|' + // Images (7,8)
+    '(\\[)|(\\](?:\\(([^)]+?)\\))?)|' + // Links (9,10,11)
+    '(?:(?:^|\\n+)([^\\s].*)\\n(-{3,}|={3,})(?:\\n+|$))|' + // Underlined Headings (12,13)
+    '(?:(?:^|\\n+)(#{1,6})\\s*(.+)(?:\\n+|$))|' + // #Headings (14,15)
+    '(?:`([^`].*?)`)|' + // Inline code (16)
+    '( {2}\\n\\n*|\\n{2,}|__|\\*\\*|[_*]|~~)|' + // Formatters (17)
+    '(?:{@(\\w+)((?:\\s+(?:[-_a-zA-Z0-9]+=)?(?:"(?:\\\\"|[^"])*"|[^"\\s}]*))*)})|' + // Special {@ } MD Tag (18,19)
+    '(?:<\\s*(\\/?)(\\w+)( [^>]+?)?\\s*\\/?>)', // HTML Tag (20,21,22)
+    'gm'
+  ),
       out = [],
       links = options.referenceLinks || {},
       last = 0,
       tags = [],
       key = 0,
-      i,
+      i, j,
       lastIsBlock = false,
       chunk, prev, token, t,
       customTagerizer = /{@(\w+)((?:\s+(?:"(?:\\"|[^"])*"|[^"\s}]*))*)}/;
@@ -365,14 +366,26 @@ module.exports = function parse(md, options) {
         lastIsBlock = true;
       } else {
         t = t.match(/^\d+\./) ? 'ol' : 'ul';
-        // var listSplitter = /^(.*)(\n|$)/gm;
-        var listSplitter = /^[*+-.]\s(.*)/gm;
-        var items = [];
-        var item;
-        while ((item = listSplitter.exec(token[5]))) {
-          items.push(e('li', { key: key++ }, parse(item[1], parseOptions)));
+        var items = token[5].split(/^[*+-.]\s/gm);
+        var eItems = [];
+        items.shift();
+        for (i = 0; i < items.length; i++) {
+          var lines = items[i].split('\n');
+          if (lines.length > 1) {
+            // Get the indentation from the first line
+            var spacing = lines[1].match(/^[ \t]+/);
+            if (spacing) {
+              spacing = new RegExp('^' + spacing[0]);
+              for (j = 1; j < lines.length; j++) {
+                lines[j] = lines[j].replace(spacing, '');
+              }
+
+              items[i] = lines.join('\n');
+            }
+          }
+          eItems.push(e('li', { key: key++ }, parse(items[i], parseOptions)));
         }
-        chunk = e(t, { key: key++ }, items);
+        chunk = e(t, { key: key++ }, eItems);
         lastIsBlock = true;
       }
     }
@@ -421,6 +434,13 @@ module.exports = function parse(md, options) {
         var href = token[11] || links[prev.toLowerCase().trim()];
         if (href) {
           tags[tags.length - 1].attributes.href = encodeAttr(href);
+
+          if (
+            options.openExternalInNewWindow &&
+            tags[tags.length - 1].attributes.href.match(/^https?:\/\//)
+          ) {
+            tags[tags.length - 1].attributes.target = '_blank'
+          }
         }
       }
       flushTo('a');

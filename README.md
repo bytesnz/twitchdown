@@ -3,6 +3,7 @@ twitchdown
 
 [![pipeline status](https://gitlab.com/bytesnz/twitchdown/badges/master/pipeline.svg)](https://gitlab.com/bytesnz/twitchdown/commits/master)
 [![npm](https://bytes.nz/b/twitchdown/npm)](https://gitlab.com/bytesnz/twitchdown)
+[![developtment time](https://bytes.nz/b/twitchdown/custom?color=yellow&name=development+time&value=~80+hours)](https://gitlab.com/bytesnz/twitchdown/blob/master/.tickings)
 
 Dead simple Markdown parser for react-like libraries
 
@@ -20,6 +21,32 @@ work
 - Integrate with code highlighters like
   [react-syntax-highlighter](https://github.com/conorhastings/react-syntax-highlighter)
 - Minified version included (`require('twitchdown/index.min')`)
+
+## Limitations
+As twitchdown uses regular expressions for parsing, it is limited in the
+formatting that it can handle. Although most good practices should be handled
+correctly, here are some formatting issues that aren't
+- lists with paragraphs
+  ```
+  - item
+  - item
+
+    with a paragraph break
+  - item
+  ```
+- items where line continuations aren't indented
+  ```
+  - item
+  - item
+  continued item
+  - item
+  ```
+- items without spacing between the point and the text
+  ```
+  - item
+  -item
+  - item
+  ```
 
 ## Example
 For a more "real life" example with lazy loading, see the
@@ -57,6 +84,11 @@ const markdown = `#Test
 This is some <em>test</em> markdown
 - good [me](me)
 - one {@custom first second "third"}
+- list item
+  over multiple lines
+  - sub list
+    over multiple lines
+  - woot
 
 {@super name=bob twitch}
 
@@ -93,6 +125,8 @@ var elements = twitchdown(markdown, {
   parseArguments: true,
   // If true and `paragraphs` is true , custom tags will be placed p tags
   tagsInParagraph: false,
+  // Opens external links in a new window
+  openExternalInNewWindow: true,
   // Reference links
   referenceLinks: {
     me: 'https://example.com/'
@@ -114,9 +148,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [Unreleased]
 
-## [1.3.3] - 2019-07-29
+## [1.4.0] - 2020-02-18
+
+## Added
+- `openExternalInNewWindow` option to open external links in a new window
+
+## Fixed
+- Handling of sub-lists and multi-line items in lists
+
+## [1.3.3] - 2020-02-15
 
 ## Changed
 - Fixed handling of p tags when using paragraphs option
@@ -185,6 +227,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.0.0 - 2018-07-10
 Initial Release
 
+[unreleased]: https://gitlab.com/bytesnz/twitchdown/compare/v1.4.0...dev
+[1.4.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.3.3...v1.4.0
 [1.3.3]: https://gitlab.com/bytesnz/twitchdown/compare/v1.3.2...v1.3.3
 [1.3.2]: https://gitlab.com/bytesnz/twitchdown/compare/v1.3.1...v1.3.2
 [1.3.1]: https://gitlab.com/bytesnz/twitchdown/compare/v1.3.0...v1.3.1

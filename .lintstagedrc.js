@@ -5,7 +5,7 @@ module.exports = {
   ],
   'index.js': [
     'eslint',
-    () => 'uglifyjs index.js > index.min.js',
+    () => 'uglifyjs index.js -o index.min.js',
     'git add index.min.js'
   ]
 };

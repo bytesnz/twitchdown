@@ -28,6 +28,11 @@ const markdown = `#Test
 This is some <em>test</em> markdown
 - good [me](me)
 - one {@custom first second "third"}
+- list item
+  over multiple lines
+  - sub list
+    over multiple lines
+  - woot
 
 {@super name=bob twitch}
 
@@ -64,6 +69,8 @@ var elements = twitchdown(markdown, {
   parseArguments: true,
   // If true and `paragraphs` is true , custom tags will be placed p tags
   tagsInParagraph: false,
+  // Opens external links in a new window
+  openExternalInNewWindow: true,
   // Reference links
   referenceLinks: {
     me: 'https://example.com/'

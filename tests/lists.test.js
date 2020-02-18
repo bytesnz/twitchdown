@@ -38,3 +38,24 @@ test('parses an ordered list', (t) => {
   ] } ], twitchdown('1. Ordered\n2. Lists\n4. Numbers are ignored'));
 });
 
+test('parses an unordered list across multiple lines', (t) => {
+  t.deepEqual([ { type: 'ul', props: { key: 3 }, children: [
+    { type: 'li', props: { key: 0 }, children: [ 'One' ] },
+    { type: 'li', props: { key: 1 }, children: [ 'Two two' ] },
+    { type: 'li', props: { key: 2 }, children: [ 'Three' ] }
+  ] } ], twitchdown('- One\n- Two\n  two\n- Three'));
+});
+
+test('parses sub-lists', (t) => {
+  t.deepEqual([ { type: 'ul', props: { key: 3 }, children: [
+    { type: 'li', props: { key: 0 }, children: [ 'One' ] },
+    { type: 'li', props: { key: 1 }, children: [
+      'Two two',
+      { type: 'ul', props: { key: 2 }, children: [
+        { type: 'li', props: { key: 0 }, children: [ 'Sub-one' ] },
+        { type: 'li', props: { key: 1 }, children: [ 'Sub-two sub-two-two' ] }
+      ] }
+    ] },
+    { type: 'li', props: { key: 2 }, children: [ 'Three' ] }
+  ] } ], twitchdown('- One\n- Two\n  two\n  - Sub-one\n  - Sub-two\n    sub-two-two\n- Three'));
+});
