@@ -150,17 +150,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.4.1] - 2020-06-14
+
+### Fixed
+- Adding of spaces after non-block elements such as links if they are directly
+  after block elements
+
 ## [1.4.0] - 2020-02-18
 
-## Added
+### Added
 - `openExternalInNewWindow` option to open external links in a new window
 
-## Fixed
+### Fixed
 - Handling of sub-lists and multi-line items in lists
 
 ## [1.3.3] - 2020-02-15
 
-## Changed
+### Changed
 - Fixed handling of p tags when using paragraphs option
 
 ## [1.3.2] - 2019-05-14
