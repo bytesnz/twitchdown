@@ -72,6 +72,7 @@ module.exports = function parse(md, options) {
       var currentTag = tags.pop();
       currentTag.out.push(e(currentTag.tag, { key: key++ }, out));
       out = currentTag.out;
+      lastIsBlock = false;
     } else {
       if (desc[0]) {
         if (options.paragraphs) {
@@ -97,6 +98,7 @@ module.exports = function parse(md, options) {
           out: out
         });
         out = [];
+        lastIsBlock = false;
       }
     }
   }
@@ -173,7 +175,7 @@ module.exports = function parse(md, options) {
    * @returns string The cleaned string
    */
   function clean(string, trimPrev) {
-    var cleaned = string.replace('\n', ' ').replace(/\s+/, ' ');
+    var cleaned = string.replace(/\n/g, ' ').replace(/\s+/, ' ');
 
     if (lastIsBlock && trimPrev) {
       cleaned = cleaned.trim();
@@ -444,6 +446,7 @@ module.exports = function parse(md, options) {
         }
       }
       flushTo('a');
+      lastIsBlock = false;
     }
     else if (token[9]) {
       addPrev();
@@ -485,6 +488,7 @@ module.exports = function parse(md, options) {
         addParagraph();
       }
       chunk = e('code', { key: key++ }, [ encodeAttr(token[16]) ]);
+      lastIsBlock = false;
     }
     // Inline formatting: *em*, **strong** & friends
     else if (token[17] || token[1]) {

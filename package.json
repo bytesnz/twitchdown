@@ -1,6 +1,6 @@
 {
   "name": "twitchdown",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Dead simple Markdown parser for react-like libraries",
   "keywords": [
     "react",
@@ -22,15 +22,15 @@
   "runkitExampleFilename": "example.js",
   "devDependencies": {
     "@ava/babel": "^1.0.1",
-    "ava": "3.3.0",
-    "eslint": "6.8.0",
-    "husky": "^4.2.3",
-    "lint-staged": "^10.0.7",
+    "ava": "3.9.0",
+    "eslint": "7.2.0",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.10",
     "mock-require": "3.0.3",
-    "preact": "10.3.2",
-    "react": "16.12.0",
-    "sinon": "8.1.1",
-    "uglify-js": "^3.8.0"
+    "preact": "10.4.4",
+    "react": "16.13.1",
+    "sinon": "9.0.2",
+    "uglify-js": "^3.9.4"
   },
   "ava": {
     "babel": true

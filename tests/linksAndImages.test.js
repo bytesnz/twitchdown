@@ -7,6 +7,10 @@ test('parses links', (t) => {
   t.deepEqual([ 'hello', { type: 'a', props: { key: 0, href: 'http://example.com' }, children: [ 'World' ] }, 'ago' ], twitchdown('hello[World](http://example.com)ago'));
 });
 
+test('Newline after header, then link rendered as space', (t) => {
+  t.deepEqual([ { type: 'h1', props: { key: 0 }, children: ['hello'] }, { type: 'a', props: { key: 1, href: 'http://example.com' }, children: [ 'World' ] }, ' again world' ], twitchdown('# hello\n[World](http://example.com)\nagain\nworld'));
+});
+
 test('newline before and after link rendered as space', (t) => {
   t.deepEqual([ 'hello ', { type: 'a', props: { key: 0, href: 'http://example.com' }, children: [ 'World' ] }, ' again' ], twitchdown('hello\n[World](http://example.com)\nagain'));
 });

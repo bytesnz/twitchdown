@@ -5,6 +5,10 @@ test('parses inline code', (t) => {
   t.deepEqual(['Here is some code ', { type: 'code', props: { key: 0 }, children: ['var a = 1'] }, '.'], twitchdown('Here is some code `var a = 1`.'));
 });
 
+test('adds space after inline code', (t) => {
+  t.deepEqual([{ type: 'h1', props: { key: 0 }, children: [ 'Header'] }, 'Code ', { type: 'code', props: { key: 1 }, children: ['var a = 1'] }, ' something'], twitchdown('# Header\nCode `var a = 1` something'));
+});
+
 test('escapes inline code', (t) => {
   t.deepEqual(['a ', { type: 'code', props: { key: 0 }, children: [ '&lt;&quot;&gt;' ] }, ' b' ], twitchdown('a `<">` b'));
 });
