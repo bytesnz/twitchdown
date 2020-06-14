@@ -173,7 +173,7 @@ module.exports = function parse(md, options) {
    * @returns string The cleaned string
    */
   function clean(string, trimPrev) {
-    var cleaned = string.replace('\n', ' ').replace(/\s+/, ' ');
+    var cleaned = string.replace(/\n/g, ' ').replace(/\s+/, ' ');
 
     if (lastIsBlock && trimPrev) {
       cleaned = cleaned.trim();
@@ -444,6 +444,7 @@ module.exports = function parse(md, options) {
         }
       }
       flushTo('a');
+      lastIsBlock = false;
     }
     else if (token[9]) {
       addPrev();
