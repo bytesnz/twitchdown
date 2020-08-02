@@ -583,4 +583,6 @@ module.exports = function parse(md, options) {
   flushTo();
 
   return out;
-}
+};
+
+module.exports.voidTags = voidTags;
