@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.4.2] - 2020-08-02
+
+### Added
+- Added `voidTags` (an array of HTML element tags that don't have a closing
+  tag)
+
+### Fixed
+- Fix example around highlighter
+
 ## [1.4.1] - 2020-06-14
 
 ### Fixed
