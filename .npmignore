@@ -1,9 +1,9 @@
 test*
 *~
-yarn*
-.gitlab-ci.yml
-.tickings
-.eslintrc.json
-utils
-README.src.md
-CHANGELOG.md
+/yarn*
+/.gitlab-ci.yml
+/.tickings
+/.eslintrc.json
+/util
+/README.src.md
+/.lintstagedrc.js
