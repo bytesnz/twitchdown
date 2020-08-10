@@ -69,7 +69,9 @@ var superTag = (attributes) => {
   return `You are super '${attributes.name}' because ${attributes.arguments.join(',')}`
 };
 
-// var highlighter = (code, language) => {
+// Use a code highlighter to highlight code in ``` tags. The function should
+// return an element as created by the used createElement function
+// var highlight = (code, language) => {
 //   return React.createElement(SyntaxHighlighter, {
 //     showLineNumbers: true,
 //     style: defaultStyle,
@@ -103,7 +105,7 @@ var elements = twitchdown(markdown, {
   // Function to use for creating elements
   // createElement: React.createElement,
   // Highlighter function for code blocks
-  //highlighter: highlighter,
+  //highlight: highlight,
   // These HTML tags and their contents will be completely removed (defaults to <script> tags)
   removeTags: [ 'script' ],
   // These HTML tags will be removed, but their contents will be kept
@@ -149,6 +151,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.4.2] - 2020-08-02
+
+### Added
+- Added `voidTags` (an array of HTML element tags that don't have a closing
+  tag)
+
+### Fixed
+- Fix example around highlighter
 
 ## [1.4.1] - 2020-06-14
 
