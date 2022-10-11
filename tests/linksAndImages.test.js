@@ -47,6 +47,10 @@ test('parses reference links without creating excessive linebreaks', (t) => {
   t.deepEqual([ 'hello ', { type: 'a', props: { key: 0, href: 'http://example.com' }, children: [ 'World' ] }, '!' ], twitchdown('\nhello [World]!\n\n[world]: http://example.com'));
 });
 
+test('parses id reference links', (t) => {
+  t.deepEqual([ 'hello ', { type: 'a', props: { key: 0, href: 'http://example.com' }, children: [ 'World' ] }, '!' ], twitchdown('\nhello [World][1]!\n\n[1]: http://example.com'));
+});
+
 test('should not add href to link if do not have href or ref', (t) => {
   t.deepEqual([ { type: 'a', props: { key: 0, }, children: [ 'World' ] } ], twitchdown('[World]'));
 });

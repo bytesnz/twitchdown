@@ -285,13 +285,13 @@ module.exports = function parse(md, options) {
     '((?:(?:^|\\n+)(?:\\t|  {2,}).+)+\\n*)|' + // Code continue (4)
     '((?:(?:^|\\n)([>*+-]|\\d+\\.)\\s+.*(?:\\n[ \\t]+.*)*)+)|' + // Quotes and lists (5,6)
     '(?:!\\[([^\\]]*?)\\]\\(([^)]+?)\\))|' + // Images (7,8)
-    '(\\[)|(\\](?:\\(([^)]+?)\\))?)|' + // Links (9,10,11)
-    '(?:(?:^|\\n+)([^\\s].*)\\n(-{3,}|={3,})(?:\\n+|$))|' + // Underlined Headings (12,13)
-    '(?:(?:^|\\n+)(#{1,6})\\s*(.+)(?:\\n+|$))|' + // #Headings (14,15)
-    '(?:`([^`].*?)`)|' + // Inline code (16)
-    '( {2}\\n\\n*|\\n{2,}|__|\\*\\*|[_*]|~~)|' + // Formatters (17)
-    '(?:{@(\\w+)((?:\\s+(?:[-_a-zA-Z0-9]+=)?(?:"(?:\\\\"|[^"])*"|[^"\\s}]*))*)})|' + // Special {@ } MD Tag (18,19)
-    '(?:<\\s*(\\/?)(\\w+)( [^>]+?)?\\s*\\/?>)', // HTML Tag (20,21,22)
+    '(\\[)|(\\](?:\\(([^)]+?)\\)|\\[([^\\]]+)\\])?)|' + // Links (9,10,11,12)
+    '(?:(?:^|\\n+)([^\\s].*)\\n(-{3,}|={3,})(?:\\n+|$))|' + // Underlined Headings (13,14)
+    '(?:(?:^|\\n+)(#{1,6})\\s*(.+)(?:\\n+|$))|' + // #Headings (15,16)
+    '(?:`([^`].*?)`)|' + // Inline code (17)
+    '( {2}\\n\\n*|\\n{2,}|__|\\*\\*|[_*]|~~)|' + // Formatters (18)
+    '(?:{@(\\w+)((?:\\s+(?:[-_a-zA-Z0-9]+=)?(?:"(?:\\\\"|[^"])*"|[^"\\s}]*))*)})|' + // Special {@ } MD Tag (19,20)
+    '(?:<\\s*(\\/?)(\\w+)( [^>]+?)?\\s*\\/?>)', // HTML Tag (21,22,23)
     'gm'
   ),
       out = [],
@@ -424,7 +424,10 @@ module.exports = function parse(md, options) {
     else if (token[10]) {
       flushTo('a', true);
       if (tags.length) {
-        if (token[11]) {
+        var href;
+        if (token[12]) {
+          href = links[token[12].toLowerCase()];
+        } else if (token[11]) {
           token[11] = token[11].replace(customTagerizer, function(s, customTag, attributes) {
             if (options.customTags && options.customTags[customTag]) {
               return options.customTags[customTag](splitAttributes(attributes));
@@ -432,8 +435,10 @@ module.exports = function parse(md, options) {
               return '';
             }
           });
+          href = token[11];
+        } else {
+          href = links[prev.toLowerCase().trim()];
         }
-        var href = token[11] || links[prev.toLowerCase().trim()];
         if (href) {
           tags[tags.length - 1].attributes.href = encodeAttr(href);
 
@@ -466,8 +471,8 @@ module.exports = function parse(md, options) {
       chunk = '';
     }
     // Headings:
-    else if (token[12] || token[14]) {
-      t = 'h' + ((token[14] ? token[14].length : (token[13][0]==='='?1:2)) + (options.headingOffset || 0));
+    else if (token[13] || token[15]) {
+      t = 'h' + ((token[15] ? token[15].length : (token[14][0]==='='?1:2)) + (options.headingOffset || 0));
       if (options.paragraphs) {
         addPrev(true);
         flushTo('p');
@@ -475,35 +480,35 @@ module.exports = function parse(md, options) {
       chunk = e(t,
         options.headingIds ? {
           key: key++,
-          id: iderize(token[12] || token[15])
+          id: iderize(token[13] || token[16])
         } : { key: key++ },
-        parse(token[12] || token[15],
+        parse(token[13] || token[16],
         Object.assign({}, options, { referenceLinks: links, paragraphs: false })));
       lastIsBlock = true;
     }
     // `code`:
-    else if (token[16]) {
+    else if (token[17]) {
       addPrev();
       if (options.paragraphs && !tags.length) {
         addParagraph();
       }
-      chunk = e('code', { key: key++ }, [ encodeAttr(token[16]) ]);
+      chunk = e('code', { key: key++ }, [ encodeAttr(token[17]) ]);
       lastIsBlock = false;
     }
     // Inline formatting: *em*, **strong** & friends
-    else if (token[17] || token[1]) {
-      tag(token[17] || '--');
+    else if (token[18] || token[1]) {
+      tag(token[18] || '--');
       chunk = null;
     }
     // Tags:
-    else if (token[18]) {
-      if (options.customTags && options.customTags[token[18]]) {
-        var inParagraph = (typeof options.customTags[token[18]] === 'object'
-            && typeof options.customTags[token[18]] !== 'undefined')
-            ? options.customTags[token[18]].inParagraph : options.tagsInParagraph;
-        var parseArguments = (typeof options.customTags[token[18]] === 'object'
-            && typeof options.customTags[token[18]] !== 'undefined')
-            ? options.customTags[token[18]].parseArguments : options.parseArguments;
+    else if (token[19]) {
+      if (options.customTags && options.customTags[token[19]]) {
+        var inParagraph = (typeof options.customTags[token[19]] === 'object'
+            && typeof options.customTags[token[19]] !== 'undefined')
+            ? options.customTags[token[19]].inParagraph : options.tagsInParagraph;
+        var parseArguments = (typeof options.customTags[token[19]] === 'object'
+            && typeof options.customTags[token[19]] !== 'undefined')
+            ? options.customTags[token[19]].parseArguments : options.parseArguments;
         addPrev(!inParagraph);
         if (options.paragraphs) {
           if (inParagraph) {
@@ -514,11 +519,11 @@ module.exports = function parse(md, options) {
             flushTo('p');
           }
         }
-        if (typeof options.customTags[token[18]] === 'function') {
-          chunk = options.customTags[token[18]](splitAttributes(token[19],
+        if (typeof options.customTags[token[19]] === 'function') {
+          chunk = options.customTags[token[19]](splitAttributes(token[20],
               parseArguments));
-        } else if (typeof options.customTags[token[18]].handler === 'function') {
-          chunk = options.customTags[token[18]].handler(splitAttributes(token[19],
+        } else if (typeof options.customTags[token[19]].handler === 'function') {
+          chunk = options.customTags[token[19]].handler(splitAttributes(token[20],
               parseArguments));
         } else {
           chunk = null;
@@ -530,38 +535,38 @@ module.exports = function parse(md, options) {
       }
     }
     // Capture HTML tags
-    else if (token[21]) {
+    else if (token[22]) {
       chunk = '';
-      if (token[20]) {
+      if (token[21]) {
         // Closing tag
         if (tags.length) {
-          flushTo(token[21]);
+          flushTo(token[22]);
         }
       } else {
-        addPrev(token[21] === 'p');
-        if (token[21] === 'p' && options.paragraphs) {
+        addPrev(token[22] === 'p');
+        if (token[22] === 'p' && options.paragraphs) {
           flushTo('p');
         }
-        if (token[22]) {
-          token[22] = splitAttributes(token[22], true);
-          if (token[22].arguments.length) {
-            for (i = 0; i < token[22].arguments.length; i++) {
-              token[22][token[22].arguments[i]] = true;
+        if (token[23]) {
+          token[23] = splitAttributes(token[23], true);
+          if (token[23].arguments.length) {
+            for (i = 0; i < token[23].arguments.length; i++) {
+              token[23][token[23].arguments[i]] = true;
             }
           }
-          delete token[22].arguments;
-          token[22].key = key++;
+          delete token[23].arguments;
+          token[23].key = key++;
         } else {
-          token[22] = { key: key++ }
+          token[23] = { key: key++ }
         }
-        if (voidTags.indexOf(token[21]) !== -1) {
-          out.push(e(token[21], token[22]));
+        if (voidTags.indexOf(token[22]) !== -1) {
+          out.push(e(token[22], token[23]));
         } else {
           // Create new tag
           tags.push({
             index: token.index,
-            tag: token[21],
-            attributes: token[22],
+            tag: token[22],
+            attributes: token[23],
             out: out
           });
           out = [];
