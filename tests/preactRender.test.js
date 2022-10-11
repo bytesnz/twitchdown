@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
-import test from 'ava';
-import twitchdown from '../index';
-import { readFileSync } from 'fs';
-import { h } from 'preact';
-import { resolve } from 'path';
+const test = require('ava');
+const twitchdown = require('../index');
+const { readFileSync } = require('fs');
+const { h } = require('preact');
+const { resolve } = require('path');
 
 test.beforeEach((t) => {
   t.context.old = {

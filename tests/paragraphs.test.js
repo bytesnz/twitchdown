@@ -1,5 +1,5 @@
-import test from 'ava';
-import twitchdown from '../index';
+const test = require('ava');
+const twitchdown = require('../index');
 
 test('wraps text in a paragraph if enabled', (t) => {
   t.deepEqual([ { type: 'p', props: { key: 0 }, children: [ 'hello' ] } ], twitchdown('hello', {

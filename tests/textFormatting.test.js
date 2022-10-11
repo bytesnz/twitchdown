@@ -1,5 +1,5 @@
-import test from 'ava';
-import twitchdown from '../index';
+const test = require('ava');
+const twitchdown = require('../index');
 
 test('parses bold with **', (t) => {
   t.deepEqual([ 'I ', { type: 'strong', props: { key: 1 }, children: [ 'like' ] }, ' tiny libraries' ], twitchdown('I **like** tiny libraries'));

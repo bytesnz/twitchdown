@@ -1,5 +1,5 @@
-import test from 'ava';
-import twitchdown from '../index';
+const test = require('ava');
+const twitchdown = require('../index');
 
 test('parses H1 titles', (t) => {
   t.deepEqual([ { type: 'h1', props: { key: 0 }, children: [ 'I like tiny libraries' ] } ], twitchdown('# I like tiny libraries'));
@@ -15,6 +15,10 @@ test('parses H2 titles', (t) => {
 
 test('parses H3 titles', (t) => {
   t.deepEqual([ { type: 'h3', props: { key: 0 }, children: ['I like tiny libraries'] } ], twitchdown('### I like tiny libraries'));
+});
+
+test('headingOffset offsets titles', (t) => {
+  t.deepEqual([ { type: 'h4', props: { key: 0 }, children: ['I like tiny libraries'] } ], twitchdown('### I like tiny libraries', { headingOffset: 1 }));
 });
 
 test('parses titles with reference links', (t) => {

@@ -1,8 +1,8 @@
 /*eslint-disable no-console */
-import test from 'ava';
-import twitchdown from '../index';
-import mock from 'mock-require';
-import sinon from 'sinon'
+const test = require('ava');
+const twitchdown = require('../index');
+const mock = require('mock-require');
+const sinon = require('sinon');
 const twitchSpy = sinon.spy(twitchdown);
 
 test.before(() => {
@@ -18,7 +18,7 @@ test('ensure the example code runs', (t) => {
   require('../example');
   t.is(1, twitchSpy.callCount);
   t.deepEqual([
-    { type: "h1", props: { key: 0 , id: "test" }, children: [ "Test" ] },
+    { type: "h2", props: { key: 0 , id: "test" }, children: [ "Test" ] },
     { type: "p", props: { key: 2 }, children: [ "This is some ", "test", " markdown" ] },
     { type: "ul", props: { key: 7 }, children: [
       { type: "li", props: { key: 4 }, children: [

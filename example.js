@@ -79,6 +79,8 @@ var elements = twitchdown(markdown, {
   },
   // Add id tags to any headings
   headingIds: true,
+  // Add an offset number to all h tags (e.g. h1 becomes h2)
+  headingOffset: 1,
   // Wrap text in p tags
   paragraphs: true
 });

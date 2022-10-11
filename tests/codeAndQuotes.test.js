@@ -1,5 +1,5 @@
-import test from 'ava';
-import twitchdown from '../index';
+const test = require('ava');
+const twitchdown = require('../index');
 
 test('parses inline code', (t) => {
   t.deepEqual(['Here is some code ', { type: 'code', props: { key: 0 }, children: ['var a = 1'] }, '.'], twitchdown('Here is some code `var a = 1`.'));
