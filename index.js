@@ -467,7 +467,7 @@ module.exports = function parse(md, options) {
     }
     // Headings:
     else if (token[12] || token[14]) {
-      t = 'h' + (token[14] ? token[14].length : (token[13][0]==='='?1:2));
+      t = 'h' + ((token[14] ? token[14].length : (token[13][0]==='='?1:2)) + (options.headingOffset || 0));
       if (options.paragraphs) {
         addPrev(true);
         flushTo('p');

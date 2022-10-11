@@ -17,6 +17,10 @@ test('parses H3 titles', (t) => {
   t.deepEqual([ { type: 'h3', props: { key: 0 }, children: ['I like tiny libraries'] } ], twitchdown('### I like tiny libraries'));
 });
 
+test('headingOffset offsets titles', (t) => {
+  t.deepEqual([ { type: 'h4', props: { key: 0 }, children: ['I like tiny libraries'] } ], twitchdown('### I like tiny libraries', { headingOffset: 1 }));
+});
+
 test('parses titles with reference links', (t) => {
   t.deepEqual([ { type: 'h1', props: { key: 0 }, children: [ 'I like ', {
   type: 'a', props: { key: 0, href: 'https://example.com' }, children: [ 'tiny libraries' ]
