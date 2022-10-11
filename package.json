@@ -21,23 +21,17 @@
   "license": "GPL-3.0",
   "runkitExampleFilename": "example.js",
   "devDependencies": {
-    "@ava/babel": "^1.0.1",
-    "ava": "3.11.1",
-    "eslint": "7.6.0",
-    "husky": "^4.2.5",
-    "lint-staged": "^10.2.10",
+    "@ava/babel": "^2.0.0",
+    "ava": "4.3.3",
+    "eslint": "8.25.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
     "mock-require": "3.0.3",
-    "preact": "10.4.7",
-    "react": "16.13.1",
-    "sinon": "9.0.2",
+    "preact": "10.11.1",
+    "react": "18.2.0",
+    "sinon": "14.0.1",
     "uglify-js": "^3.9.4"
   },
   "ava": {
-    "babel": true
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   }
 }

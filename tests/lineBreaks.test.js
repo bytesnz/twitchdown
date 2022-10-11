@@ -1,5 +1,5 @@
-import test from 'ava';
-import twitchdown from '../index';
+const test = require('ava');
+const twitchdown = require('../index');
 
 test('parses two new lines as line breaks', (t) => {
   t.deepEqual([ 'Something with',

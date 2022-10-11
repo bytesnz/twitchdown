@@ -1,5 +1,5 @@
-import test from 'ava';
-import twitchdown from '../index';
+const test = require('ava');
+const twitchdown = require('../index');
 
 test('parses links', (t) => {
   t.deepEqual([ { type: 'a', props: { key: 0, href: 'http://example.com' }, children: [ 'World' ] } ], twitchdown('[World](http://example.com)'));

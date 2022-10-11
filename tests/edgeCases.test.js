@@ -1,5 +1,5 @@
-import test from 'ava';
-import twitchdown from '../index';
+const test = require('ava');
+const twitchdown = require('../index');
 
 test('should close unclosed tags', (t) => {
   t.deepEqual([ { type: 'em', props: { key: 0 }, children: [ 'foo' ] } ], twitchdown('*foo'));

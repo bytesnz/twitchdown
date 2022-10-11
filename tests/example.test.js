@@ -1,8 +1,8 @@
 /*eslint-disable no-console */
-import test from 'ava';
-import twitchdown from '../index';
-import mock from 'mock-require';
-import sinon from 'sinon'
+const test = require('ava');
+const twitchdown = require('../index');
+const mock = require('mock-require');
+const sinon = require('sinon');
 const twitchSpy = sinon.spy(twitchdown);
 
 test.before(() => {
