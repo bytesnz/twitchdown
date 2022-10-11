@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.5.0] - 2022-10-11
+
+### Added
+- `headingOffset` option allowing the offsetting of h tags. For example if
+  `headingOffset is set to `1` in the options, an `h1` heading will be
+  formatted as as `h2` heading
+
+### Fixed
+- Handling of [reference links](https://www.markdownguide.org/basic-syntax/#reference-style-links)
+
 ## [1.4.2] - 2020-08-02
 
 ### Added
@@ -98,7 +108,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.0.0 - 2018-07-10
 Initial Release
 
-[unreleased]: https://gitlab.com/bytesnz/twitchdown/compare/v1.4.0...dev
+[unreleased]: https://gitlab.com/bytesnz/twitchdown/compare/v1.5.0...dev
+[1.5.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.4.2...v1.5.0
+[1.4.2]: https://gitlab.com/bytesnz/twitchdown/compare/v1.4.1...v1.4.2
+[1.4.1]: https://gitlab.com/bytesnz/twitchdown/compare/v1.4.0...v1.4.1
 [1.4.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.3.3...v1.4.0
 [1.3.3]: https://gitlab.com/bytesnz/twitchdown/compare/v1.3.2...v1.3.3
 [1.3.2]: https://gitlab.com/bytesnz/twitchdown/compare/v1.3.1...v1.3.2
