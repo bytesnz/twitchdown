@@ -22,16 +22,15 @@
   "runkitExampleFilename": "example.js",
   "devDependencies": {
     "@ava/babel": "^2.0.0",
-    "ava": "4.3.3",
-    "eslint": "8.25.0",
+    "ava": "^4.3.3",
+    "eslint": "^8.25.0",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
-    "mock-require": "3.0.3",
-    "preact": "10.11.1",
-    "react": "18.2.0",
-    "sinon": "14.0.1",
+    "mock-require": "^3.0.3",
+    "preact": "^10.11.2",
+    "react": "^18.2.0",
+    "sinon": "^14.0.1",
     "uglify-js": "^3.9.4"
   },
-  "ava": {
-  }
+  "ava": {}
 }
