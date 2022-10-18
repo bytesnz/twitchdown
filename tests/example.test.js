@@ -26,7 +26,7 @@ test('ensure the example code runs', (t) => {
         { type: "a", props: { key: 0 , href: "me" }, children: [ "me" ] }
       ] },
       { type: "li", props: { key: 5 }, children: [
-        "one ",
+        "one ", "&mdash;", " ",
         "First is 'first', the rest is 'second,third"
       ] },
       { type: "li", props: { key: 6 }, children: [

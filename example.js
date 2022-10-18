@@ -29,7 +29,7 @@ const markdown = `#Test
 
 This is some <em>test</em> markdown
 - good [me](me)
-- one {@custom first second "third"}
+- one --- {@custom first second "third"}
 - list item
   over multiple lines
   - sub list
@@ -82,7 +82,9 @@ var elements = twitchdown(markdown, {
   // Add an offset number to all h tags (e.g. h1 becomes h2)
   headingOffset: 1,
   // Wrap text in p tags
-  paragraphs: true
+  paragraphs: true,
+  /// Replace --, --- and ... with an endash, emdash and ellipsis respectively
+  replacePunctuation: true
 });
 
 console.log(elements);

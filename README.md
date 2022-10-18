@@ -16,8 +16,10 @@ work
 - Still fast
 - Still small
 - Still simply - pass a Markdown string, get an array of components (created with the given `createElement` function)
-- Use custom `{@ }` tags and handlers
-- Add `<p>` tags around text
+- Option to use custom `{@ }` tags and handlers
+- Option to add `<p>` tags around text
+- Option to replace `--`, `---` and `...` with an endash, emdash and ellipsis
+  respectively
 - Integrate with code highlighters like
   [react-syntax-highlighter](https://github.com/conorhastings/react-syntax-highlighter)
 - Minified version included (`require('twitchdown/index.min')`)
@@ -85,7 +87,7 @@ const markdown = `#Test
 
 This is some <em>test</em> markdown
 - good [me](me)
-- one {@custom first second "third"}
+- one --- {@custom first second "third"}
 - list item
   over multiple lines
   - sub list
@@ -138,7 +140,9 @@ var elements = twitchdown(markdown, {
   // Add an offset number to all h tags (e.g. h1 becomes h2)
   headingOffset: 1,
   // Wrap text in p tags
-  paragraphs: true
+  paragraphs: true,
+  /// Replace --, --- and ... with an endash, emdash and ellipsis respectively
+  replacePunctuation: true
 });
 
 console.log(elements);
@@ -153,6 +157,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.6.0] - 2022-10-19
+
+### Added
+- `replacePunctuation' option for replacement of `--`, `---`, `...` with an
+  endash (&ndash;), emdash (&mdash;) and ellipsis (&hellip;) respectively
 
 ## [1.5.0] - 2022-10-11
 
@@ -256,7 +266,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.0.0 - 2018-07-10
 Initial Release
 
-[unreleased]: https://gitlab.com/bytesnz/twitchdown/compare/v1.5.0...dev
+[unreleased]: https://gitlab.com/bytesnz/twitchdown/compare/v1.6.0...dev
+[1.6.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.5.0...v1.6.0
 [1.5.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.4.2...v1.5.0
 [1.4.2]: https://gitlab.com/bytesnz/twitchdown/compare/v1.4.1...v1.4.2
 [1.4.1]: https://gitlab.com/bytesnz/twitchdown/compare/v1.4.0...v1.4.1
