@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.6.0] - 2022-10-19
+
+### Added
+- `replacePunctuation' option for replacement of `--`, `---`, `...` with an
+  endash (&ndash;), emdash (&mdash;) and ellipsis (&hellip;) respectively
+
 ## [1.5.0] - 2022-10-11
 
 ### Added
@@ -108,7 +114,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.0.0 - 2018-07-10
 Initial Release
 
-[unreleased]: https://gitlab.com/bytesnz/twitchdown/compare/v1.5.0...dev
+[unreleased]: https://gitlab.com/bytesnz/twitchdown/compare/v1.6.0...dev
+[1.6.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.5.0...v1.6.0
 [1.5.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.4.2...v1.5.0
 [1.4.2]: https://gitlab.com/bytesnz/twitchdown/compare/v1.4.1...v1.4.2
 [1.4.1]: https://gitlab.com/bytesnz/twitchdown/compare/v1.4.0...v1.4.1

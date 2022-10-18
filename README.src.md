@@ -16,8 +16,10 @@ work
 - Still fast
 - Still small
 - Still simply - pass a Markdown string, get an array of components (created with the given `createElement` function)
-- Use custom `{@ }` tags and handlers
-- Add `<p>` tags around text
+- Option to use custom `{@ }` tags and handlers
+- Option to add `<p>` tags around text
+- Option to replace `--`, `---` and `...` with an endash, emdash and ellipsis
+  respectively
 - Integrate with code highlighters like
   [react-syntax-highlighter](https://github.com/conorhastings/react-syntax-highlighter)
 - Minified version included (`require('twitchdown/index.min')`)

@@ -291,7 +291,8 @@ module.exports = function parse(md, options) {
     '(?:`([^`].*?)`)|' + // Inline code (17)
     '( {2}\\n\\n*|\\n{2,}|__|\\*\\*|[_*]|~~)|' + // Formatters (18)
     '(?:{@(\\w+)((?:\\s+(?:[-_a-zA-Z0-9]+=)?(?:"(?:\\\\"|[^"])*"|[^"\\s}]*))*)})|' + // Special {@ } MD Tag (19,20)
-    '(?:<\\s*(\\/?)(\\w+)( [^>]+?)?\\s*\\/?>)', // HTML Tag (21,22,23)
+    '(?:<\\s*(\\/?)(\\w+)( [^>]+?)?\\s*\\/?>)|' + // HTML Tag (21,22,23)
+    '(---|--|\\.\\.\\.)', // Replacements (24)
     'gm'
   ),
       out = [],
@@ -572,6 +573,19 @@ module.exports = function parse(md, options) {
           out = [];
         }
         prev = '';
+      }
+    }
+    else if (token[24] && options.replacePunctuation) {
+      switch (token[24]) {
+        case '---':
+          chunk = '&mdash;';
+          break;
+        case '--':
+          chunk = '&ndash;';
+          break;
+        case '...':
+          chunk = '&hellip;';
+          break;
       }
     }
 
