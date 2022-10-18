@@ -7,3 +7,6 @@ test*
 /util
 /README.src.md
 /.lintstagedrc.js
+/.husky
+/example.js
+/CHANGELOG.md
