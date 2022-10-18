@@ -9,12 +9,12 @@ Dead simple Markdown parser for react-like libraries
 
 ## Kudos
 Kudos goes to [Jason Miller](https://github.com/developit) and the contributors
-to [Snarkdown](https://github.com/developit) as this is based off their hard
-work
+to [Snarkdown](https://github.com/developit/snarkdown) as this is based off
+their hard work.
 
 ## Features
 - Still fast
-- Still small
+- Still small (9.5kB, 3kB gzipped)
 - Still simply - pass a Markdown string, get an array of components (created with the given `createElement` function)
 - Option to use custom `{@ }` tags and handlers
 - Option to add `<p>` tags around text

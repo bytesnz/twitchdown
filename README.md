@@ -9,12 +9,12 @@ Dead simple Markdown parser for react-like libraries
 
 ## Kudos
 Kudos goes to [Jason Miller](https://github.com/developit) and the contributors
-to [Snarkdown](https://github.com/developit) as this is based off their hard
-work
+to [Snarkdown](https://github.com/developit/snarkdown) as this is based off
+their hard work.
 
 ## Features
 - Still fast
-- Still small
+- Still small (9.5kB, 3kB gzipped)
 - Still simply - pass a Markdown string, get an array of components (created with the given `createElement` function)
 - Option to use custom `{@ }` tags and handlers
 - Option to add `<p>` tags around text
@@ -158,10 +158,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.6.1] - 2022-10-19
+
+### Fixed
+- Typo in CHANGELOG
+
 ## [1.6.0] - 2022-10-19
 
 ### Added
-- `replacePunctuation' option for replacement of `--`, `---`, `...` with an
+- `replacePunctuation` option for replacement of `--`, `---`, `...` with an
   endash (&ndash;), emdash (&mdash;) and ellipsis (&hellip;) respectively
 
 ## [1.5.0] - 2022-10-11
@@ -266,7 +271,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.0.0 - 2018-07-10
 Initial Release
 
-[unreleased]: https://gitlab.com/bytesnz/twitchdown/compare/v1.6.0...dev
+[unreleased]: https://gitlab.com/bytesnz/twitchdown/compare/v1.6.1...dev
+[1.6.1]: https://gitlab.com/bytesnz/twitchdown/compare/v1.6.0...v1.6.1
 [1.6.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.5.0...v1.6.0
 [1.5.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.4.2...v1.5.0
 [1.4.2]: https://gitlab.com/bytesnz/twitchdown/compare/v1.4.1...v1.4.2
