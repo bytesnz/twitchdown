@@ -19,13 +19,20 @@ test:
 
 tag:
   stage: tag
+  image: registry.gitlab.com/gitlab-org/release-cli
   script:
-    - export VERSION=$(node -e "console.log(require('./package.json').version)")
-    - git status
-    - git remote -v
-    - git remote set-url origin ${GLT}
-    - git tag v$VERSION
-    - git push origin v$VERSION
+    - |
+      VERSION=$(cat package.json | sed -n "s/^.*\"version\": \"\\(.*\\)\".*$/\1/p")
+      DESCRIPTION=$(cat CHANGELOG.md | sed -e "1,/$(echo $VERSION | sed 's/\\./\\\\./')/d" | sed -e '/^## /,$d')
+      CURRENT_TAG=$(git describe --tags 2>/dev/null || true)
+      if [ "$CURRENT_TAG" != "v$VERSION" ]; then
+        release-cli --server-url $CI_SERVER_URL --job-token $CI_JOB_TOKEN \
+        --project-id $CI_PROJECT_ID create --name "Release v${VERSION}" \
+        --description "$DESCRIPTION" --tag-name "v${VERSION}" \
+        --ref $CI_COMMIT_SHA
+      fi
+  variables:
+    GIT_SUBMODULE_STRATEGY: none
   only:
     - master@bytesnz/twitchdown
 
