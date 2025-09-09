@@ -284,15 +284,16 @@ module.exports = function parse(md, options) {
     '(?:^``` *(\\w*)\\n([\\s\\S]*?)\\n```$)|' + // Code blocks (2,3)
     '((?:(?:^|\\n+)(?:\\t|  {2,}).+)+\\n*)|' + // Code continue (4)
     '((?:(?:^|\\n)([>*+-]|\\d+\\.)\\s+.*(?:\\n[ \\t]+.*)*)+)|' + // Quotes and lists (5,6)
-    '(?:!\\[([^\\]]*?)\\]\\(([^)]+?)\\))|' + // Images (7,8)
-    '(\\[)|(\\](?:\\(([^)]+?)\\)|\\[([^\\]]+)\\])?)|' + // Links (9,10,11,12)
-    '(?:(?:^|\\n+)([^\\s].*)\\n(-{3,}|={3,})(?:\\n+|$))|' + // Underlined Headings (13,14)
-    '(?:(?:^|\\n+)(#{1,6})\\s*(.+)(?:\\n+|$))|' + // #Headings (15,16)
-    '(?:`([^`].*?)`)|' + // Inline code (17)
-    '( {2}\\n\\n*|\\n{2,}|__|\\*\\*|[_*]|~~)|' + // Formatters (18)
-    '(?:{@(\\w+)((?:\\s+(?:[-_a-zA-Z0-9]+=)?(?:"(?:\\\\"|[^"])*"|[^"\\s}]*))*)})|' + // Special {@ } MD Tag (19,20)
-    '(?:<\\s*(\\/?)(\\w+)( [^>]+?)?\\s*\\/?>)|' + // HTML Tag (21,22,23)
-    '(---|--|\\.\\.\\.)', // Replacements (24)
+    '((?:(?:^|\\n)[^\\n:]+(?:\\n[^\\n:]+)*(?:\\n:\\s+[^\\n]+)+)+)|' + // Description lists (7)
+    '(?:!\\[([^\\]]*?)\\]\\(([^)]+?)\\))|' + // Images (8,9)
+    '(\\[)|(\\](?:\\(([^)]+?)\\)|\\[([^\\]]+)\\])?)|' + // Links (10,11,12,13)
+    '(?:(?:^|\\n+)([^\\s].*)\\n(-{3,}|={3,})(?:\\n+|$))|' + // Underlined Headings (14,15)
+    '(?:(?:^|\\n+)(#{1,6})\\s*(.+)(?:\\n+|$))|' + // #Headings (16,17)
+    '(?:`([^`].*?)`)|' + // Inline code (18)
+    '( {2}\\n\\n*|\\n{2,}|__|\\*\\*|[_*]|~~)|' + // Formatters (19)
+    '(?:{@(\\w+)((?:\\s+(?:[-_a-zA-Z0-9]+=)?(?:"(?:\\\\"|[^"])*"|[^"\\s}]*))*)})|' + // Special {@ } MD Tag (20,21)
+    '(?:<\\s*(\\/?)(\\w+)( [^>]+?)?\\s*\\/?>)|' + // HTML Tag (22,23,24)
+    '(---|--|\\.\\.\\.)', // Replacements (25)
     'gm'
   ),
       out = [],
@@ -392,13 +393,35 @@ module.exports = function parse(md, options) {
         lastIsBlock = true;
       }
     }
+    // Description lists:
+    else if (token[7]) {
+      if (options.paragraphs) {
+        addPrev(true);
+        flushTo('p');
+      }
+      var dlKey = key++;
+      var dlItems = [];
+      var lines = token[7].split('\n');
+      for (i = 0; i < lines.length; i++) {
+        var line = lines[i].trim();
+        if (line) {
+          if (line.match(/^:\s+/)) {
+            dlItems.push(e('dd', { key: key++ }, [line.replace(/^:\s+/, '')]));
+          } else {
+            dlItems.push(e('dt', { key: key++ }, [line]));
+          }
+        }
+      }
+      chunk = e('dl', { key: dlKey }, dlItems);
+      lastIsBlock = true;
+    }
     // Images:
-    else if (token[8]) {
+    else if (token[9]) {
       addPrev();
       if (options.paragraphs && !tags.length) {
         addParagraph();
       }
-      token[8] = token[8].replace(customTagerizer, function(s, customTag, attributes) {
+      token[9] = token[9].replace(customTagerizer, function(s, customTag, attributes) {
         if (options.customTags && options.customTags[customTag]) {
           return options.customTags[customTag](splitAttributes(attributes));
         } else {
@@ -406,37 +429,37 @@ module.exports = function parse(md, options) {
         }
       });
       var props;
-      if (token[7]) {
+      if (token[8]) {
         props = {
           key: key++,
-          src: encodeAttr(token[8]),
-          alt: encodeAttr(token[7]),
-          title: encodeAttr(token[7])
+          src: encodeAttr(token[9]),
+          alt: encodeAttr(token[8]),
+          title: encodeAttr(token[8])
         }
       } else {
         props = {
           key: key++,
-          src: encodeAttr(token[8])
+          src: encodeAttr(token[9])
         }
       }
       chunk = e('img', props);
     }
     // Links:
-    else if (token[10]) {
+    else if (token[11]) {
       flushTo('a', true);
       if (tags.length) {
         var href;
-        if (token[12]) {
-          href = links[token[12].toLowerCase()];
-        } else if (token[11]) {
-          token[11] = token[11].replace(customTagerizer, function(s, customTag, attributes) {
+        if (token[13]) {
+          href = links[token[13].toLowerCase()];
+        } else if (token[12]) {
+          token[12] = token[12].replace(customTagerizer, function(s, customTag, attributes) {
             if (options.customTags && options.customTags[customTag]) {
               return options.customTags[customTag](splitAttributes(attributes));
             } else {
               return '';
             }
           });
-          href = token[11];
+          href = token[12];
         } else {
           href = links[prev.toLowerCase().trim()];
         }
@@ -454,7 +477,7 @@ module.exports = function parse(md, options) {
       flushTo('a');
       lastIsBlock = false;
     }
-    else if (token[9]) {
+    else if (token[10]) {
       addPrev();
       if (options.paragraphs && !tags.length) {
         addParagraph();
@@ -472,8 +495,8 @@ module.exports = function parse(md, options) {
       chunk = '';
     }
     // Headings:
-    else if (token[13] || token[15]) {
-      t = 'h' + ((token[15] ? token[15].length : (token[14][0]==='='?1:2)) + (options.headingOffset || 0));
+    else if (token[14] || token[16]) {
+      t = 'h' + ((token[16] ? token[16].length : (token[15][0]==='='?1:2)) + (options.headingOffset || 0));
       if (options.paragraphs) {
         addPrev(true);
         flushTo('p');
@@ -481,35 +504,35 @@ module.exports = function parse(md, options) {
       chunk = e(t,
         options.headingIds ? {
           key: key++,
-          id: iderize(token[13] || token[16])
+          id: iderize(token[14] || token[17])
         } : { key: key++ },
-        parse(token[13] || token[16],
+        parse(token[14] || token[17],
         Object.assign({}, options, { referenceLinks: links, paragraphs: false })));
       lastIsBlock = true;
     }
     // `code`:
-    else if (token[17]) {
+    else if (token[18]) {
       addPrev();
       if (options.paragraphs && !tags.length) {
         addParagraph();
       }
-      chunk = e('code', { key: key++ }, [ encodeAttr(token[17]) ]);
+      chunk = e('code', { key: key++ }, [ encodeAttr(token[18]) ]);
       lastIsBlock = false;
     }
     // Inline formatting: *em*, **strong** & friends
-    else if (token[18] || token[1]) {
-      tag(token[18] || '--');
+    else if (token[19] || token[1]) {
+      tag(token[19] || '--');
       chunk = null;
     }
     // Tags:
-    else if (token[19]) {
-      if (options.customTags && options.customTags[token[19]]) {
-        var inParagraph = (typeof options.customTags[token[19]] === 'object'
-            && typeof options.customTags[token[19]] !== 'undefined')
-            ? options.customTags[token[19]].inParagraph : options.tagsInParagraph;
-        var parseArguments = (typeof options.customTags[token[19]] === 'object'
-            && typeof options.customTags[token[19]] !== 'undefined')
-            ? options.customTags[token[19]].parseArguments : options.parseArguments;
+    else if (token[20]) {
+      if (options.customTags && options.customTags[token[20]]) {
+        var inParagraph = (typeof options.customTags[token[20]] === 'object'
+            && typeof options.customTags[token[20]] !== 'undefined')
+            ? options.customTags[token[20]].inParagraph : options.tagsInParagraph;
+        var parseArguments = (typeof options.customTags[token[20]] === 'object'
+            && typeof options.customTags[token[20]] !== 'undefined')
+            ? options.customTags[token[20]].parseArguments : options.parseArguments;
         addPrev(!inParagraph);
         if (options.paragraphs) {
           if (inParagraph) {
@@ -520,11 +543,11 @@ module.exports = function parse(md, options) {
             flushTo('p');
           }
         }
-        if (typeof options.customTags[token[19]] === 'function') {
-          chunk = options.customTags[token[19]](splitAttributes(token[20],
+        if (typeof options.customTags[token[20]] === 'function') {
+          chunk = options.customTags[token[20]](splitAttributes(token[21],
               parseArguments));
-        } else if (typeof options.customTags[token[19]].handler === 'function') {
-          chunk = options.customTags[token[19]].handler(splitAttributes(token[20],
+        } else if (typeof options.customTags[token[20]].handler === 'function') {
+          chunk = options.customTags[token[20]].handler(splitAttributes(token[21],
               parseArguments));
         } else {
           chunk = null;
@@ -536,38 +559,38 @@ module.exports = function parse(md, options) {
       }
     }
     // Capture HTML tags
-    else if (token[22]) {
+    else if (token[23]) {
       chunk = '';
-      if (token[21]) {
+      if (token[22]) {
         // Closing tag
         if (tags.length) {
-          flushTo(token[22]);
+          flushTo(token[23]);
         }
       } else {
-        addPrev(token[22] === 'p');
-        if (token[22] === 'p' && options.paragraphs) {
+        addPrev(token[23] === 'p');
+        if (token[23] === 'p' && options.paragraphs) {
           flushTo('p');
         }
-        if (token[23]) {
-          token[23] = splitAttributes(token[23], true);
-          if (token[23].arguments.length) {
-            for (i = 0; i < token[23].arguments.length; i++) {
-              token[23][token[23].arguments[i]] = true;
+        if (token[24]) {
+          token[24] = splitAttributes(token[24], true);
+          if (token[24].arguments.length) {
+            for (i = 0; i < token[24].arguments.length; i++) {
+              token[24][token[24].arguments[i]] = true;
             }
           }
-          delete token[23].arguments;
-          token[23].key = key++;
+          delete token[24].arguments;
+          token[24].key = key++;
         } else {
-          token[23] = { key: key++ }
+          token[24] = { key: key++ }
         }
-        if (voidTags.indexOf(token[22]) !== -1) {
-          out.push(e(token[22], token[23]));
+        if (voidTags.indexOf(token[23]) !== -1) {
+          out.push(e(token[23], token[24]));
         } else {
           // Create new tag
           tags.push({
             index: token.index,
-            tag: token[22],
-            attributes: token[23],
+            tag: token[23],
+            attributes: token[24],
             out: out
           });
           out = [];
@@ -575,8 +598,8 @@ module.exports = function parse(md, options) {
         prev = '';
       }
     }
-    else if (token[24] && options.replacePunctuation) {
-      switch (token[24]) {
+    else if (token[25] && options.replacePunctuation) {
+      switch (token[25]) {
         case '---':
           chunk = '&mdash;';
           break;
