@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.7.0] - 2025-09-10
+
+### Added
+- [description list](https://developer.mozilla.org/docs/Web/HTML/Reference/Elements/dl) parsing
+
 ## [1.6.1] - 2022-10-19
 
 ### Fixed
@@ -119,7 +124,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.0.0 - 2018-07-10
 Initial Release
 
-[unreleased]: https://gitlab.com/bytesnz/twitchdown/compare/v1.6.1...dev
+[unreleased]: https://gitlab.com/bytesnz/twitchdown/compare/v1.7.0...dev
+[1.7.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.6.1...v1.7.0
 [1.6.1]: https://gitlab.com/bytesnz/twitchdown/compare/v1.6.0...v1.6.1
 [1.6.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.5.0...v1.6.0
 [1.5.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.4.2...v1.5.0

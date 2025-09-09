@@ -56,6 +56,8 @@ For a more "real life" example with lazy loading, see the
 
 
 ```javascript
+require('util').inspect.defaultOptions.depth = 10
+
 var twitchdown = require('twitchdown');
 // var React = require('react');
 // var SyntaxHighlighter = require('react-syntax-highlighter');
@@ -95,6 +97,11 @@ This is some <em>test</em> markdown
   - woot
 
 {@super name=bob twitch}
+
+twitchdown
+: is a great markdown parser
+javascript
+: is a great language
 
 \`\`\`javascript
 function hello() {
@@ -149,33 +156,83 @@ console.log(elements);
 
 /* elements will be
 [
-  { type: "h2", props: { key: 0 , id: "test" }, children: [ "Test" ] },
-  { type: "p", props: { key: 2 }, children: [ "This is some ", "test", " markdown" ] },
-  { type: "ul", props: { key: 7 }, children: [
-    { type: "li", props: { key: 4 }, children: [
-      "good ",
-      { type: "a", props: { key: 0 , href: "me" }, children: [ "me" ] }
-    ] },
-    { type: "li", props: { key: 5 }, children: [
-      "one ", "&mdash;", " ",
-      "First is 'first', the rest is 'second,third"
-    ] },
-    { type: "li", props: { key: 6 }, children: [
-      "list item over multiple lines",
-      { type: "ul", props: { key: 2 }, children: [
-        { type: "li", props: { key: 0 }, children: [
-          "sub list over multiple lines"
-        ] },
-        { type: "li", props: { key: 1 }, children: [
-          "woot"
-        ] }
-      ] }
-    ] }
-  ] },
+  { type: 'h2', props: { key: 0, id: 'test' }, children: [ 'Test' ] },
+  {
+    type: 'p',
+    props: { key: 2 },
+    children: [ 'This is some ', 'test', ' markdown' ]
+  },
+  {
+    type: 'ul',
+    props: { key: 7 },
+    children: [
+      {
+        type: 'li',
+        props: { key: 4 },
+        children: [
+          'good ',
+          {
+            type: 'a',
+            props: { key: 0, href: 'me' },
+            children: [ 'me' ]
+          }
+        ]
+      },
+      {
+        type: 'li',
+        props: { key: 5 },
+        children: [
+          'one ',
+          '&mdash;',
+          ' ',
+          "First is 'first', the rest is 'second,third"
+        ]
+      },
+      {
+        type: 'li',
+        props: { key: 6 },
+        children: [
+          'list item over multiple lines',
+          {
+            type: 'ul',
+            props: { key: 2 },
+            children: [
+              {
+                type: 'li',
+                props: { key: 0 },
+                children: [ 'sub list over multiple lines' ]
+              },
+              { type: 'li', props: { key: 1 }, children: [ 'woot' ] }
+            ]
+          }
+        ]
+      }
+    ]
+  },
   "You are super 'bob' because twitch",
-  { type: "pre", props: { key: 8 , className: "code javascript" }, children: [
-    "function hello() {\n  console.debug('hello');\n}"
-  ] }
+  {
+    type: 'dl',
+    props: { key: 8 },
+    children: [
+      { type: 'dt', props: { key: 9 }, children: [ 'twitchdown' ] },
+      {
+        type: 'dd',
+        props: { key: 10 },
+        children: [ 'is a great markdown parser' ]
+      },
+      { type: 'dt', props: { key: 11 }, children: [ 'javascript' ] },
+      {
+        type: 'dd',
+        props: { key: 12 },
+        children: [ 'is a great language' ]
+      }
+    ]
+  },
+  {
+    type: 'pre',
+    props: { key: 13, className: 'code javascript' },
+    children: [ "function hello() {\n  console.debug('hello');\n}" ]
+  }
 ];
 
 */
@@ -189,6 +246,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.7.0] - 2025-09-10
+
+### Added
+- [description list](https://developer.mozilla.org/docs/Web/HTML/Reference/Elements/dl) parsing
 
 ## [1.6.1] - 2022-10-19
 
@@ -303,7 +365,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## 1.0.0 - 2018-07-10
 Initial Release
 
-[unreleased]: https://gitlab.com/bytesnz/twitchdown/compare/v1.6.1...dev
+[unreleased]: https://gitlab.com/bytesnz/twitchdown/compare/v1.7.0...dev
+[1.7.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.6.1...v1.7.0
 [1.6.1]: https://gitlab.com/bytesnz/twitchdown/compare/v1.6.0...v1.6.1
 [1.6.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.5.0...v1.6.0
 [1.5.0]: https://gitlab.com/bytesnz/twitchdown/compare/v1.4.2...v1.5.0

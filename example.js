@@ -1,3 +1,5 @@
+require('util').inspect.defaultOptions.depth = 10
+
 var twitchdown = require('twitchdown');
 // var React = require('react');
 // var SyntaxHighlighter = require('react-syntax-highlighter');
@@ -37,6 +39,11 @@ This is some <em>test</em> markdown
   - woot
 
 {@super name=bob twitch}
+
+twitchdown
+: is a great markdown parser
+javascript
+: is a great language
 
 \`\`\`javascript
 function hello() {
