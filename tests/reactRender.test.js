@@ -1,20 +1,21 @@
 /* eslint-disable no-console */
-const test = require('ava');
+const { test } = require('node:test');
+const assert = require('node:assert');
 const twitchdown = require('../index');
 const { readFileSync } = require('fs');
 const { createElement } = require('react');
 const { resolve } = require('path');
 
-test.beforeEach((t) => {
-  t.context.old = {
+test('that it renders using React without any errors', () => {
+  const old = {
     log: console.log,
     warn: console.warn,
     error: console.error,
     debug: console.debug
   };
 
-  t.context.logs = [];
-  const newLog = (level) => (...messages) => t.context.logs.push({
+  const logs = [];
+  const newLog = (level) => (...messages) => logs.push({
     level,
     messages
   });
@@ -23,26 +24,19 @@ test.beforeEach((t) => {
   console.warn = newLog('warn');
   console.error = newLog('error');
   console.debug = newLog('debug');
-});
 
-test.afterEach((t) => {
-  console.log = t.context.old.log;
-  console.warn = t.context.old.warn;
-  console.error = t.context.old.error;
-  console.debug = t.context.old.debug;
-});
+  try {
+    const markdown = readFileSync(resolve(__dirname, '../README.md')).toString();
 
-test('that it renders using React without any errors', (t) => {
-  const markdown = readFileSync(resolve(__dirname, '../README.md')).toString();
+    createElement('p', {}, twitchdown(markdown, {
+      createElement
+    }));
 
-  createElement('p', {}, twitchdown(markdown, {
-    createElement
-  }));
-
-  if (t.context.logs.length) {
-    t.log(JSON.stringify(twitchdown('## [2018-09-28] - test')));
-    t.log(twitchdown(markdown));
-    t.log(t.context.logs);
+    assert.deepStrictEqual([], logs, 'No logs created');
+  } finally {
+    console.log = old.log;
+    console.warn = old.warn;
+    console.error = old.error;
+    console.debug = old.debug;
   }
-  t.deepEqual([], t.context.logs, 'No logs created');
 });

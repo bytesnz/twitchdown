@@ -1,8 +1,9 @@
-const test = require('ava');
+const { test } = require('node:test');
+const assert = require('node:assert');
 const twitchdown = require('../index');
 
-test('parses description lists correctly', (t) => {
-  t.deepEqual([
+test('parses description lists correctly', () => {
+  assert.deepStrictEqual([
     'Something with',
     { type: 'br', props: { key: 0 } },
     { type: 'dl', props: { key: 1 }, children: [
@@ -31,9 +32,8 @@ description term 3
 a line break`));
 });
 
-test('parses description lists correctly with paragraphs', (t) => {
-
-  t.deepEqual([
+test('parses description lists correctly with paragraphs', () => {
+  assert.deepStrictEqual([
       { type: 'p', props: { key: 0 }, children: [ 'Something with' ] },
       { type: 'dl', props: { key: 1 }, children: [
         { type: 'dt', props: { key: 2 }, children: [ 'description term 1' ] },

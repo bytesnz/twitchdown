@@ -1,11 +1,12 @@
-const test = require('ava');
+const { test } = require('node:test');
+const assert = require('node:assert');
 const twitchdown = require('../index');
 
-test('wraps text in a paragraph if enabled', (t) => {
-  t.deepEqual([ { type: 'p', props: { key: 0 }, children: [ 'hello' ] } ], twitchdown('hello', {
+test('wraps text in a paragraph if enabled', () => {
+  assert.deepStrictEqual([ { type: 'p', props: { key: 0 }, children: [ 'hello' ] } ], twitchdown('hello', {
     paragraphs: true
   }));
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [ 'hello' ] },
     { type: 'p', props: { key: 1 }, children: [ 'test' ] },
     { type: 'p', props: { key: 2 }, children: [ 'test again' ] }
@@ -14,8 +15,8 @@ test('wraps text in a paragraph if enabled', (t) => {
   }));
 });
 
-test('doesn\'t wrap headings, code blocks, lists, custom tags and html tags (if separate) in paragraphs', (t) => {
-  t.deepEqual([
+test('doesn\'t wrap headings, code blocks, lists, custom tags and html tags (if separate) in paragraphs', () => {
+  assert.deepStrictEqual([
     { type: 'h1', props: { key: 0 }, children: [ 'heading' ] },
     { type: 'p', props: { key: 1 }, children: [ 'hello you' ] },
     { type: 'h2', props: { key: 2 }, children: [ 'subheading' ] },
@@ -24,7 +25,7 @@ test('doesn\'t wrap headings, code blocks, lists, custom tags and html tags (if 
     paragraphs: true
   }), 'headings');
 
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [ 'hello' ] },
     { type: 'blockquote', props: { key: 1 }, children: [ 'quote' ] },
     { type: 'p', props: { key: 2 }, children: [ 'bye' ] }
@@ -32,7 +33,7 @@ test('doesn\'t wrap headings, code blocks, lists, custom tags and html tags (if 
     paragraphs: true
   }), 'blockquotes');
 
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [ 'hello' ] },
     { type: 'hr', props: { key: 1 } },
     { type: 'p', props: { key: 2 }, children: [ 'bye' ] }
@@ -40,7 +41,7 @@ test('doesn\'t wrap headings, code blocks, lists, custom tags and html tags (if 
     paragraphs: true
   }), 'horizontal rules');
 
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [ 'hello' ] },
     { type: 'ul', props: { key: 2 }, children: [
       { type: 'li', props: { key: 1 }, children: [ 'item' ] }
@@ -50,7 +51,7 @@ test('doesn\'t wrap headings, code blocks, lists, custom tags and html tags (if 
     paragraphs: true
   }), 'lists');
 
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [ 'hello' ] },
     { type: 'pre', props: { key: 1, className: 'code poetry' }, children: [ 'something\nelse' ] },
     { type: 'p', props: { key: 2 }, children: [ 'bye' ] }
@@ -58,7 +59,7 @@ test('doesn\'t wrap headings, code blocks, lists, custom tags and html tags (if 
     paragraphs: true
   }), 'quote blocks');
 
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [ 'hello' ] },
     { type: 'pre', props: { key: 1, className: 'code' }, children: [ 'something' ] },
     { type: 'p', props: { key: 2 }, children: [ 'bye' ] }
@@ -66,7 +67,7 @@ test('doesn\'t wrap headings, code blocks, lists, custom tags and html tags (if 
     paragraphs: true
   }), 'code blocks');
 
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [ 'hello' ] },
     'Custom tag'
   ], twitchdown('hello\n{@custom}', {
@@ -76,7 +77,7 @@ test('doesn\'t wrap headings, code blocks, lists, custom tags and html tags (if 
     }
   }), 'custom tags');
 
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [ 'hello' ] },
     { type: 'test', props: { key: 1 }, children: [ 'something' ] },
     { type: 'p', props: { key: 2 }, children: [ 'bye' ] }
@@ -85,8 +86,8 @@ test('doesn\'t wrap headings, code blocks, lists, custom tags and html tags (if 
   }), 'html tags if separate');
 });
 
-test('Puts links, images, inline formatting, html tags (if inline) and single quote code in paragraphs', (t) => {
-  t.deepEqual([
+test('Puts links, images, inline formatting, html tags (if inline) and single quote code in paragraphs', () => {
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [
       'test ',
       { type: 'a', props: { key: 1, href: '#test' }, children: [ 'link' ] },
@@ -96,7 +97,7 @@ test('Puts links, images, inline formatting, html tags (if inline) and single qu
     paragraphs: true
   }), 'link in text');
 
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [
       { type: 'a', props: { key: 1, href: '#test' }, children: [ 'link' ] },
       ' woot'
@@ -105,7 +106,7 @@ test('Puts links, images, inline formatting, html tags (if inline) and single qu
     paragraphs: true
   }), 'link at start of text');
 
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [
       'hello ',
       { type: 'em', props: { key: 2 }, children: [ 'something' ] },
@@ -115,7 +116,7 @@ test('Puts links, images, inline formatting, html tags (if inline) and single qu
     paragraphs: true
   }), 'inline formatting');
 
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [
       { type: 'em', props: { key: 2 }, children: [ 'something' ] },
       ' bye'
@@ -124,7 +125,7 @@ test('Puts links, images, inline formatting, html tags (if inline) and single qu
     paragraphs: true
   }), 'inline formatting');
 
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [
       'test ',
       { type: 'img', props: { key: 1, src: 'image.png', alt: 'image', title: 'image' } },
@@ -134,7 +135,7 @@ test('Puts links, images, inline formatting, html tags (if inline) and single qu
     paragraphs: true
   }), 'text then image');
 
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [
       { type: 'img', props: { key: 1, src: 'image.png', alt: 'image', title: 'image' } },
       ' woot'
@@ -143,7 +144,7 @@ test('Puts links, images, inline formatting, html tags (if inline) and single qu
     paragraphs: true
   }), 'image then text');
 
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [
       { type: 'code', props: { key: 1 }, children: [ 'something' ] },
     ] }
@@ -151,7 +152,7 @@ test('Puts links, images, inline formatting, html tags (if inline) and single qu
     paragraphs: true
   }), 'code by itself');
 
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [
       'test ',
       { type: 'code', props: { key: 1 }, children: [ 'something' ] },
@@ -160,7 +161,7 @@ test('Puts links, images, inline formatting, html tags (if inline) and single qu
     paragraphs: true
   }), 'text then code');
 
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'p', props: { key: 0 }, children: [
       'hello ',
       { type: 'test', props: { key: 1 }, children: [ 'something' ] },

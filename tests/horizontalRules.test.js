@@ -1,36 +1,37 @@
-const test = require('ava');
+const { test } = require('node:test');
+const assert = require('node:assert');
 const twitchdown = require('../index');
 
-test('should parse ---', (t) => {
-  t.deepEqual([
+test('should parse ---', () => {
+  assert.deepStrictEqual([
     'foo',
     { type: 'hr', props: { key: 0 } },
     'bar'
   ], twitchdown('foo\n\n---\nbar'));
-  t.deepEqual([
+  assert.deepStrictEqual([
     'foo',
     { type: 'hr', props: { key: 0 } },
     'bar'
   ], twitchdown('foo\n\n----\nbar'), '----');
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'blockquote', props: { key: 0 }, children: [ 'foo' ] },
     { type: 'hr', props: { key: 1 } },
     'bar'
   ], twitchdown('> foo\n\n---\nbar'));
 });
 
-test('should parse * * *', (t) => {
-  t.deepEqual([
+test('should parse * * *', () => {
+  assert.deepStrictEqual([
     'foo',
     { type: 'hr', props: { key: 0 } },
     'bar'
   ], twitchdown('foo\n* * *\nbar'));
-  t.deepEqual([
+  assert.deepStrictEqual([
     'foo',
     { type: 'hr', props: { key: 0 } },
     'bar'
   ], twitchdown('foo\n* * * *\nbar'), '* * * *');
-  t.deepEqual([
+  assert.deepStrictEqual([
     { type: 'blockquote', props: { key: 0 }, children: [ 'foo' ] },
     { type: 'hr', props: { key: 1 } },
     'bar'

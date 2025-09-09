@@ -1,4 +1,5 @@
-const test = require('ava');
+const { test } = require('node:test');
+const assert = require('node:assert');
 const twitchdown = require('../index');
 
 const options = {
@@ -7,36 +8,36 @@ const options = {
   }
 };
 
-test('removes custom tags if no handler for them', (t) => {
-  t.deepEqual([], twitchdown('{@unknown}', options));
+test('removes custom tags if no handler for them', () => {
+  assert.deepStrictEqual([], twitchdown('{@unknown}', options));
 });
 
-test('parses and calls handler for a custom tag with no parameters', (t) => {
-  t.deepEqual([ 'CUSTOM_NO_TAGS' ], twitchdown('{@test}', options));
+test('parses and calls handler for a custom tag with no parameters', () => {
+  assert.deepStrictEqual([ 'CUSTOM_NO_TAGS' ], twitchdown('{@test}', options));
 });
 
-test('parses and calls handler for a custom tag with parameters', (t) => {
-  t.deepEqual([ 'CUSTOM(value,value 2)' ], twitchdown('{@test value "value 2"}', options));
+test('parses and calls handler for a custom tag with parameters', () => {
+  assert.deepStrictEqual([ 'CUSTOM(value,value 2)' ], twitchdown('{@test value "value 2"}', options));
 });
 
-test('parses multiple custom tags correctly', (t) => {
-  t.deepEqual([ 'CUSTOM(value,value 2)', 'CUSTOM(another "valu}e,again)' ], twitchdown('{@test value "value 2"}{@test "another \\"valu}e" again}', options));
+test('parses multiple custom tags correctly', () => {
+  assert.deepStrictEqual([ 'CUSTOM(value,value 2)', 'CUSTOM(another "valu}e,again)' ], twitchdown('{@test value "value 2"}{@test "another \\"valu}e" again}', options));
 });
 
-test('parses custom tag inside of image urls and links', (t) => {
-  t.deepEqual([ { type: 'img', props: { key: 0 , src: 'CUSTOM(id,again)', alt: 'title', title: 'title' } } ], twitchdown('![title]({@test id "again"})', options), 'image');
+test('parses custom tag inside of image urls and links', () => {
+  assert.deepStrictEqual([ { type: 'img', props: { key: 0 , src: 'CUSTOM(id,again)', alt: 'title', title: 'title' } } ], twitchdown('![title]({@test id "again"})', options), 'image');
 
-  t.deepEqual([ { type: 'a', props: { key: 0 , href: 'CUSTOM(id,again)' }, children: [ 'Snarkdown' ] } ], twitchdown('[Snarkdown]({@test id "again"})', options), 'link');
+  assert.deepStrictEqual([ { type: 'a', props: { key: 0 , href: 'CUSTOM(id,again)' }, children: [ 'Snarkdown' ] } ], twitchdown('[Snarkdown]({@test id "again"})', options), 'link');
 
-  t.deepEqual([ 'hello ', { type: 'a', props: { key: 0 , href: 'CUSTOM(id,again)' }, children: [ 'World' ] }, '!' ], twitchdown('\nhello [World]!\n[world]: {@test id "again"}', options), 'reference link');
+  assert.deepStrictEqual([ 'hello ', { type: 'a', props: { key: 0 , href: 'CUSTOM(id,again)' }, children: [ 'World' ] }, '!' ], twitchdown('\nhello [World]!\n[world]: {@test id "again"}', options), 'reference link');
 
-  t.deepEqual([ { type: 'a', props: { key: 0 , href: 'CUSTOM(link,again)' }, children: [
+  assert.deepStrictEqual([ { type: 'a', props: { key: 0 , href: 'CUSTOM(link,again)' }, children: [
     { type: 'img', props: { key: 1 , src: 'CUSTOM(id,again)' } }
   ] } ], twitchdown('[![]({@test id "again"})]({@test link "again"})', options), 'image inside link');
 });
 
-test('parses attributes in an object if given parseArguments option', (t) => {
-  t.deepEqual([ {
+test('parses attributes in an object if given parseArguments option', () => {
+  assert.deepStrictEqual([ {
     arguments: [ 'one', 'double=two' ],
     test: 'string',
     another: 'quoted string'
@@ -46,7 +47,7 @@ test('parses attributes in an object if given parseArguments option', (t) => {
     },
     parseArguments: true
   }), 'global parseArguments set');
-  t.deepEqual([ {
+  assert.deepStrictEqual([ {
     arguments: [ 'one', 'double=two' ],
     test: 'string',
     another: 'quoted string'
@@ -58,7 +59,7 @@ test('parses attributes in an object if given parseArguments option', (t) => {
       }
     }
   }), 'tag parseArguments set');
-  t.deepEqual([ [ 'one', 'test=string', 'double=two', 'another="quoted string"' ] ],
+  assert.deepStrictEqual([ [ 'one', 'test=string', 'double=two', 'another="quoted string"' ] ],
       twitchdown('{@test one test=string "double=two" another="quoted string"}', {
     customTags: {
       test: {
@@ -70,8 +71,8 @@ test('parses attributes in an object if given parseArguments option', (t) => {
   }), 'tag parseArguments overriding global');
 });
 
-test('allows customTag handlers as objects', (t) => {
-  t.deepEqual([ 'CUSTOM(value,value 2)' ], twitchdown('{@test value "value 2"}', {
+test('allows customTag handlers as objects', () => {
+  assert.deepStrictEqual([ 'CUSTOM(value,value 2)' ], twitchdown('{@test value "value 2"}', {
     customTags: {
       test: {
         handler: options.customTags.test
@@ -80,17 +81,17 @@ test('allows customTag handlers as objects', (t) => {
   }));
 });
 
-test('puts tag in a paragraph if tagsInParagrah or inParagraph set', (t) => {
-  t.deepEqual([ 'CUSTOM(value,value 2)' ], twitchdown('{@test value "value 2"}', {
+test('puts tag in a paragraph if tagsInParagrah or inParagraph set', () => {
+  assert.deepStrictEqual([ 'CUSTOM(value,value 2)' ], twitchdown('{@test value "value 2"}', {
     ...options,
     tagsInParagraph: true
   }), 'does not without paragraphs set');
-  t.deepEqual([ { type: 'p', props: { key: 0 }, children: [ 'CUSTOM(value,value 2)' ] } ], twitchdown('{@test value "value 2"}', {
+  assert.deepStrictEqual([ { type: 'p', props: { key: 0 }, children: [ 'CUSTOM(value,value 2)' ] } ], twitchdown('{@test value "value 2"}', {
     ...options,
     paragraphs: true,
     tagsInParagraph: true
   }), 'tagsInParagraph set');
-  t.deepEqual([ 'CUSTOM(value)', { type: 'p', props: { key: 0 }, children: [ 'CUSTOM(value,value 2)' ] } ], twitchdown('{@test value}{@again value "value 2"}', {
+  assert.deepStrictEqual([ 'CUSTOM(value)', { type: 'p', props: { key: 0 }, children: [ 'CUSTOM(value,value 2)' ] } ], twitchdown('{@test value}{@again value "value 2"}', {
     customTags: {
       test: options.customTags.test,
       again: {
@@ -100,7 +101,7 @@ test('puts tag in a paragraph if tagsInParagrah or inParagraph set', (t) => {
     },
     paragraphs: true
   }), 'tag inParagraph set');
-  t.deepEqual([ 'CUSTOM(value,value 2)' ], twitchdown('{@test value "value 2"}', {
+  assert.deepStrictEqual([ 'CUSTOM(value,value 2)' ], twitchdown('{@test value "value 2"}', {
     customTags: {
       test: {
         handler: options.customTags.test,
